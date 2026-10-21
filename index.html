@@ -237,16 +237,26 @@
         <div class="modal-content">
             <h2 style="margin-bottom: 20px; text-align: center; color: #2f54eb;">☁️ 数据备份与恢复</h2>
             
-            <div class="form-group">
-                <label>1. 导出数据（复制这段乱码发给另一台设备）</label>
-                <textarea id="syncDataText" style="min-height: 100px; font-family: monospace; font-size: 12px;" placeholder="点击下方按钮生成数据..."></textarea>
-                <button type="button" class="btn-add-model" style="background: #e6f7ff; border-color: #91d5ff; color: #1890ff; margin-top: 8px;" onclick="exportData()">📤 生成并复制备份数据</button>
+            <div class="form-group" style="border-bottom: 2px dashed #eee; padding-bottom: 20px;">
+                <label style="color: #1890ff; font-size: 15px;">📤 导出数据（下载为文件）</label>
+                <p style="font-size: 12px; color: #999; margin-bottom: 10px;">推荐！将数据保存为文件，再也不怕复制漏掉。</p>
+                <button type="button" class="btn-add-model" style="background: #e6f7ff; border-color: #91d5ff; color: #1890ff;" onclick="exportFile()">💾 下载备份文件 (.json)</button>
+                
+                <label style="margin-top: 15px;">或者：复制文本（适合数据量少时）</label>
+                <textarea id="syncDataText" style="min-height: 60px; font-family: monospace; font-size: 12px; margin-bottom: 5px;" placeholder="点击下方按钮生成文本..."></textarea>
+                <button type="button" class="btn-copy" style="width: 100%; padding: 10px;" onclick="exportText()">📋 生成并复制文本</button>
             </div>
 
-            <div class="form-group">
-                <label>2. 导入数据（把复制的乱码粘贴到这里，点击导入）</label>
-                <textarea id="importDataText" style="min-height: 100px; font-family: monospace; font-size: 12px;" placeholder="在此粘贴备份数据..."></textarea>
-                <button type="button" class="btn-add-model" style="background: var(--apple-green-light); border-color: var(--apple-green); color: var(--apple-green); margin-top: 8px;" onclick="importData()">📥 确认导入并覆盖</button>
+            <div class="form-group" style="padding-top: 10px;">
+                <label style="color: var(--apple-green); font-size: 15px;">📥 导入数据</label>
+                <p style="font-size: 12px; color: #999; margin-bottom: 10px;">选择之前下载的文件，或者粘贴文本。</p>
+                
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importFromFile(event)">
+                <button type="button" class="btn-add-model" style="background: white; border-color: var(--apple-green); color: var(--apple-green);" onclick="document.getElementById('importFile').click()">📂 选择文件上传</button>
+                
+                <label style="margin-top: 15px;">或者：粘贴文本导入</label>
+                <textarea id="importDataText" style="min-height: 60px; font-family: monospace; font-size: 12px; margin-bottom: 5px;" placeholder="在此粘贴备份文本..."></textarea>
+                <button type="button" class="btn-add-model" style="background: var(--apple-green); border-color: var(--apple-green); color: white;" onclick="importFromText()">✅ 确认导入并覆盖</button>
             </div>
             
             <div class="modal-actions">
@@ -320,42 +330,79 @@
     </div>
 
     <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV10')) || []; // 升级到 V10
+        let sites = JSON.parse(localStorage.getItem('mySitesV11')) || []; // 升级到 V11
         let isEditing = false;
         let currentFilter = 'none'; 
         let searchKeyword = '';
 
-        // === 新增：导出和导入功能 ===
+        // === 新的文件导入导出逻辑 ===
         function openSyncModal() {
             document.getElementById('syncDataText').value = '';
             document.getElementById('importDataText').value = '';
+            document.getElementById('importFile').value = '';
             document.getElementById('syncModal').style.display = 'flex';
         }
-        function closeSyncModal() {
-            document.getElementById('syncModal').style.display = 'none';
+        function closeSyncModal() { document.getElementById('syncModal').style.display = 'none'; }
+
+        // 1. 下载为 JSON 文件
+        function exportFile() {
+            if(sites.length === 0) return alert('你现在没有数据可以导出哦~');
+            const dataStr = JSON.stringify(sites, null, 2); // 格式化输出，方便阅读
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `qiuqiu_api_backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
-        function exportData() {
+        // 2. 复制为纯文本
+        function exportText() {
             if(sites.length === 0) return alert('你现在没有数据可以导出哦~');
             const dataStr = JSON.stringify(sites);
             document.getElementById('syncDataText').value = dataStr;
-            
-            // 自动复制到剪贴板
             navigator.clipboard.writeText(dataStr).then(() => {
-                alert('✅ 备份数据已生成并复制到剪贴板！\n请发到微信或备忘录中。');
+                alert('✅ 备份文本已生成并复制到剪贴板！');
             }).catch(() => {
                 alert('生成成功，但自动复制失败，请手动长按上方文本框全选复制。');
             });
         }
 
-        function importData() {
+        // 3. 从文件读取导入
+        function importFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsedData = JSON.parse(e.target.result);
+                    if (!Array.isArray(parsedData)) throw new Error('数据格式错误');
+                    if (confirm('⚠️ 警告：导入会覆盖当前设备上的所有数据，确定要继续吗？')) {
+                        sites = parsedData;
+                        saveData();
+                        renderSites();
+                        closeSyncModal();
+                        alert('🎉 文件导入成功！');
+                    }
+                } catch (err) {
+                    alert('❌ 导入失败：文件内容格式不正确。');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 4. 从文本框粘贴导入
+        function importFromText() {
             const importStr = document.getElementById('importDataText').value.trim();
-            if (!importStr) return alert('请先粘贴备份数据！');
-            
+            if (!importStr) return alert('请先粘贴备份文本！');
             try {
                 const parsedData = JSON.parse(importStr);
                 if (!Array.isArray(parsedData)) throw new Error('数据格式错误');
-                
                 if (confirm('⚠️ 警告：导入会覆盖当前设备上的所有数据，确定要继续吗？')) {
                     sites = parsedData;
                     saveData();
@@ -364,10 +411,10 @@
                     alert('🎉 数据导入成功！');
                 }
             } catch (e) {
-                alert('❌ 导入失败：你粘贴的数据格式不正确，或者复制不完整。');
+                alert('❌ 导入失败：粘贴的文本不完整或格式错误。');
             }
         }
-        // =======================
+        // ===========================
 
         function updateDashboard() {
             let totalB = 0;
@@ -498,7 +545,7 @@
                 let qqHtml = site.qqGroup ? `
                     <div class="qq-box">
                         <div class="qq-info">
-                            <div class="qq-label">🐧 官方QQ群</div>
+                            <divclass="qq-label">🐧 官方QQ群</div>
                             <div class="qq-text">${site.qqGroup}</div>
                         </div>
                         <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.qqGroup}', this)">📋 复制群号</button>
@@ -539,7 +586,7 @@
                         ${remarkHtml}
                         <div class="actions">
                             <button class="btn-small btn-edit" onclick="event.stopPropagation(); editSite(${index})">编辑</button>
-                            <button class="btn-small btn-delete" onclick="event.stopPropagation(); deleteSite($);
+                            <button class="btn-small btn-delete" onclick="event.stopPropagation(); deleteSite(${index})">删除</button>
                         </div>
                     </div>
                 `;
@@ -570,7 +617,7 @@
             }).catch(() => alert('复制失败，请长按复制'));
         }
 
-        function saveData() { localStorage.setItem('mySitesV10', JSON.stringify(sites)); }
+        function saveData() { localStorage.setItem('mySitesV11', JSON.stringify(sites)); }
 
         function openModal() {
             isEditing = false;
