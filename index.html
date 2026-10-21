@@ -142,7 +142,7 @@
         .url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
         .url-text { font-size: 12px; color: #555; word-break: break-all; font-family: monospace;}
 
-        /* 新增：账号密码专属区域（紫色系区分） */
+        /* 账号密码专属区域 */
         .auth-box { 
             background: #f9f0ff; border: 1px dashed #d3adf7; 
             border-radius: 12px; padding: 10px; margin-bottom: 10px; 
@@ -224,7 +224,7 @@
     <!-- 工具栏 -->
     <div class="toolbar">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="搜站点/账号/模型/备注..." oninput="renderSites()">
+            <input type="text" id="searchInput" placeholder="搜站点/用户名/模型/备注..." oninput="renderSites()">
         </div>
         <button class="btn-filter" id="filterBtnUnsign" onclick="toggleFilter('unsign')">🍏 仅看未签</button>
         <button class="btn-filter" id="filterBtnRecharge" onclick="toggleFilter('recharge')">💰 仅看充值</button>
@@ -273,11 +273,11 @@
                 <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white;">
             </div>
 
-            <!-- 新增：账号密码记录 -->
+            <!-- 用户名和密码记录 -->
             <div class="form-group" style="background: #f9f0ff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d3adf7;">
-                <label style="color: #722ed1;">🔐 专属账号</label>
-                <input type="text" id="accountUser" placeholder="登录用户名/账号" style="background: white; margin-bottom: 8px; border-color: transparent;">
-                <input type="text" id="accountPass" placeholder="登录密码" style="background: white; border-color: transparent;">
+                <label style="color: #722ed1;">🔐 专属用户名</label>
+                <input type="text" id="accountUser" placeholder="输入用户名" style="background: white; margin-bottom: 8px; border-color: transparent;">
+                <input type="text" id="accountPass" placeholder="输入密码" style="background: white; border-color: transparent;">
             </div>
 
             <!-- QQ群号 -->
@@ -302,7 +302,7 @@
     </div>
 
     <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV9')) || []; // 升级到 V9
+        let sites = JSON.parse(localStorage.getItem('mySitesV9')) || []; 
         let isEditing = false;
         
         let currentFilter = 'none'; 
@@ -357,7 +357,6 @@
             container.appendChild(div);
         }
 
-        // 切换密码显示隐藏
         function togglePassword(index) {
             const passEl = document.getElementById(`pass-${index}`);
             const eyeBtn = document.getElementById(`eye-${index}`);
@@ -365,10 +364,10 @@
             
             if (passEl.innerText === '••••••') {
                 passEl.innerText = realPass;
-                eyeBtn.innerText = '🙈'; // 闭眼
+                eyeBtn.innerText = '🙈';
             } else {
                 passEl.innerText = '••••••';
-                eyeBtn.innerText = '👁️'; // 睁眼
+                eyeBtn.innerText = '👁️';
             }
         }
 
@@ -382,7 +381,6 @@
                 if (currentFilter === 'unsign' && !(site.supportSign === '是' && site.isSigned === '否')) return;
                 if (currentFilter === 'recharge' && !(site.hasRecharge === '是' && site.rechargeAmount)) return;
 
-                // 搜索逻辑（包含账号、密码、群号等）
                 let searchContent = site.name + (site.remark||'') + (site.customUrl||'') + (site.qqGroup||'') + (site.accountUser||'');
                 if(site.foodModels) site.foodModels.forEach(m => { searchContent += (m.name + m.price); });
                 if (searchKeyword && !searchContent.toLowerCase().includes(searchKeyword)) return;
@@ -419,12 +417,11 @@
                         <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.customUrl}', this)">📋 复制</button>
                     </div>` : '';
 
-                // 账号密码渲染
                 let authHtml = (site.accountUser || site.accountPass) ? `
                     <div class="auth-box">
                         ${site.accountUser ? `
                         <div class="auth-row">
-                            <div class="auth-info"><div class="auth-label">🔑 账号</div><div class="auth-text">${site.accountUser}</div></div>
+                            <div class="auth-info"><div class="auth-label">🔑 用户名</div><div class="auth-text">${site.accountUser}</div></div>
                             <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.accountUser}', this)">📋 复制</button>
                         </div>` : ''}
                         ${site.accountPass ? `
@@ -501,7 +498,6 @@
             updateDashboard();
         }
 
-        // --- 拖拽逻辑 ---
         function handleDragStart(e) {
             draggedIndex = this.getAttribute('data-index');
             this.classList.add('dragging');
@@ -548,6 +544,7 @@
         function openModal() {
             isEditing = false;
             document.getElementById('modalTitle').innerText = '添加新站点';
+            document.getElementById('editId').value = '';
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
             document.getElementById('supportSign').value = '是';
