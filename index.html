@@ -6,318 +6,253 @@
     <title>qiuqiuのapi 🍎🍏</title>
     <style>
         :root {
-            /* 红绿苹果主题色 */
-            --apple-green: #7bc970;
-            --apple-green-light: #eaf7e8;
-            --apple-red: #ff7b7b;
-            --apple-red-light: #ffebeb;
-            --text-main: #4a3e3e;
-            --text-light: #9a8c8c;
-            --bg-color: #fcf8f5; /* 奶油白底色 */
+            --apple-green: #52c41a;
+            --apple-green-light: #f6ffed;
+            --apple-red: #ff4d4f;
+            --apple-red-light: #fff1f0;
+            --text-main: #333333;
+            --text-light: #888888;
+            --bg-color: #f7f9f7;
             --card-bg: #ffffff;
-            --shadow: 0 8px 24px rgba(255, 123, 123, 0.12);
         }
         
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            /* 采用更圆润可爱的系统字体 */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; }
         
         body { 
-            /* 奶油底色 + 淡淡的红绿氛围 */
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 10% 20%, rgba(123, 201, 112, 0.08) 0%, transparent 30%),
-                              radial-gradient(circle at 90% 80%, rgba(255, 123, 123, 0.08) 0%, transparent 30%);
+            /* 极简毛玻璃质感背景 */
+            background-image: radial-gradient(circle at 0% 0%, rgba(82, 196, 26, 0.1) 0%, transparent 40%),
+                              radial-gradient(circle at 100% 100%, rgba(255, 77, 79, 0.1) 0%, transparent 40%);
             background-attachment: fixed;
             color: var(--text-main); 
-            padding: 20px 15px; 
+            padding: 15px; 
             padding-bottom: 100px; 
             min-height: 100vh;
         }
 
-        /* 顶部标题 */
-        header { margin-bottom: 25px; padding: 0 5px; text-align: center; }
-        h1 { 
-            font-size: 28px; 
-            font-weight: 900; 
-            letter-spacing: 1px; 
-            color: var(--apple-red);
-            text-shadow: 2px 2px 0px var(--apple-green-light), 4px 4px 0px rgba(255,123,123,0.2);
-            position: relative;
-            display: inline-block;
+        /* 顶部状态栏 */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #fff;
         }
-        /* 标题上的小叶子 */
-        h1::before {
-            content: '🌱';
-            font-size: 20px;
-            position: absolute;
-            top: -10px;
-            left: -15px;
-            transform: rotate(-20deg);
+        h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--apple-red); margin-bottom: 10px; }
+        
+        .dashboard { display: flex; justify-content: space-around; text-align: center; font-size: 12px; color: var(--text-light); }
+        .dashboard span { display: block; font-size: 16px; font-weight: bold; color: var(--text-main); margin-top: 2px; }
+        .dashboard .green-text { color: var(--apple-green); }
+
+        /* 工具栏（搜索、筛选、重置） */
+        .toolbar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 120px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 10px 15px 10px 35px; border-radius: 12px;
+            border: 1px solid #e0e0e0; background: white; font-size: 14px; outline: none;
         }
+        .search-box::before {
+            content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px;
+        }
+        .btn-filter, .btn-reset {
+            padding: 10px 15px; border-radius: 12px; font-size: 13px; font-weight: bold;
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;
+            background: white; color: var(--text-main); border: 1px solid #e0e0e0;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .btn-filter.active { background: var(--apple-green); color: white; border-color: var(--apple-green); }
+        .btn-reset { background: var(--apple-red-light); color: var(--apple-red); border-color: #ffccc7; }
+        .btn-filter:active, .btn-reset:active { transform: scale(0.95); }
 
         /* 悬浮添加按钮 */
         .fab { 
             position: fixed; bottom: 30px; right: 20px; 
-            width: 65px; height: 65px; border-radius: 50%; 
-            background: linear-gradient(135deg, var(--apple-red), #ff9a9a); 
-            color: white; font-size: 32px; line-height: 65px; text-align: center; 
-            box-shadow: 0 6px 20px rgba(255, 123, 123, 0.5); 
-            border: 4px solid white;
-            cursor: pointer; z-index: 99;
+            width: 60px; height: 60px; border-radius: 50%; 
+            background: var(--apple-red); color: white; font-size: 30px; line-height: 60px; text-align: center; 
+            box-shadow: 0 6px 16px rgba(255, 77, 79, 0.4); 
+            border: 3px solid white; cursor: pointer; z-index: 99;
             transition: transform 0.2s;
         }
-        .fab:active { transform: scale(0.9) rotate(90deg); }
+        .fab:active { transform: scale(0.9); }
 
         /* 卡片样式 */
         .card { 
-            background: var(--card-bg); 
-            border-radius: 24px; /* 更圆润 */
-            margin-bottom: 20px; 
-            box-shadow: var(--shadow); 
-            position: relative; 
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 2px solid #fff; /* 白色包边 */
+            background: var(--card-bg); border-radius: 20px; margin-bottom: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;
+            overflow: hidden; position: relative; transition: all 0.3s ease;
         }
-        /* 卡片顶部：红绿渐变条 */
         .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
-            background: linear-gradient(90deg, var(--apple-green) 0%, #a8e063 50%, var(--apple-red) 100%);
-            z-index: 10;
+            content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%;
+            background: var(--apple-green); transition: background 0.3s;
         }
+        .card.unsign-card::before { background: var(--apple-red); } /* 没签到的左侧红条 */
         
         /* 头部（支持点击折叠） */
         .card-header { 
             display: flex; justify-content: space-between; align-items: center;
-            padding: 22px 20px; cursor: pointer; user-select: none;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(252,248,245,0.5) 100%);
+            padding: 18px 20px 18px 25px; cursor: pointer; user-select: none;
         }
-        .header-left { display: flex; flex-direction: column; gap: 8px; }
-        .site-name { 
-            font-size: 20px; 
-            font-weight: 800; 
-            color: #3d2e2e; 
-            letter-spacing: 0.5px;
-        }
+        .site-name { font-size: 18px; font-weight: 800; color: #222; }
+        .toggle-icon { font-size: 22px; }
         
-        /* 苹果折叠图标 */
-        .toggle-icon { 
-            font-size: 24px; 
-            transition: transform 0.3s ease; 
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-        }
-        .card.collapsed .toggle-icon { transform: scale(0.9) rotate(-10deg); }
-        
-        /* 内容区（可折叠） */
-        .card-body {
-            padding: 0 20px 20px 20px;
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
+        /* 内容区 */
+        .card-body { padding: 0 20px 20px 25px; display: block; }
         .card.collapsed .card-body { display: none; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* 链接行 */
-        .link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; border-bottom: 2px dashed var(--apple-green-light); padding-bottom: 15px;}
-        .site-link { 
-            font-size: 13px; color: var(--apple-green); text-decoration: none; 
-            background: var(--apple-green-light); padding: 8px 14px; 
-            border-radius: 12px; font-weight: 700;
-            border: 1px solid #d0ebcd;
-        }
-        
-        /* 复制按钮 */
+        .link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 12px;}
+        .site-link { font-size: 13px; color: var(--apple-green); text-decoration: none; background: var(--apple-green-light); padding: 6px 12px; border-radius: 8px; font-weight: bold; }
         .btn-copy { 
-            background: #f4f4f4; border: 1px solid #e0e0e0; color: #888; 
-            padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 700;
-            cursor: pointer; transition: all 0.2s;
-            white-space: nowrap;
-            display: flex; align-items: center; justify-content: center; gap: 4px;
-            flex-shrink: 0;
-            box-shadow: 0 2px 0 #e0e0e0;
+            background: #f5f5f5; border: 1px solid #e0e0e0; color: #666; 
+            padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;
+            cursor: pointer; white-space: nowrap;
         }
-        .btn-copy:active { background: #eaeaea; transform: translateY(2px); box-shadow: none; }
         
-        .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 14px; }
-        .info-label { color: var(--text-light); font-weight: 700; font-size: 13px; flex-shrink: 0;}
-        .info-value { font-weight: 800; color: #5a4b4b; }
-        .balance { color: var(--apple-red); font-weight: 900; font-size: 20px; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 10px; }
+        .info-label { color: var(--text-light); font-size: 13px; font-weight: bold; }
+        .balance { color: var(--apple-red); font-weight: 900; font-size: 18px; }
 
-        /* ======= 苹果造型滑动开关 ======= */
-        .switch-container {
-            display: flex; align-items: center; gap: 10px; cursor: pointer;
-            background: #fdfafa; padding: 4px 10px 4px 14px; border-radius: 20px;
-            border: 2px solid #f0e6e6;
-        }
-        .switch-text {
-            font-size: 13px; font-weight: 800; transition: color 0.3s;
-        }
-        .switch-text.unsigned { color: #d08e8e; }
+        /* 滑动开关签到 */
+        .switch-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .switch-text { font-size: 13px; font-weight: bold; }
+        .switch-text.unsigned { color: var(--apple-red); }
         .switch-text.signed { color: var(--apple-green); }
-
-        .toggle-switch {
-            position: relative; width: 54px; height: 30px;
-            background-color: #e8d8d8; /* 默认灰色 */
-            border-radius: 30px; transition: background-color 0.3s;
-            flex-shrink: 0;
-        }
-        /* 滑块做成果绿色 */
-        .toggle-switch::after {
-            content: ''; position: absolute; top: 2px; left: 2px;
-            width: 26px; height: 26px; background-color: white;
-            border-radius: 50%; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            display: flex; justify-content: center; align-items: center;
-        }
-        /* 激活状态 */
+        .toggle-switch { position: relative; width: 44px; height: 24px; background-color: #ddd; border-radius: 24px; transition: 0.3s; }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .toggle-switch.active { background-color: var(--apple-green); }
-        .toggle-switch.active::after { transform: translateX(24px); }
-        /* ============================= */
+        .toggle-switch.active::after { transform: translateX(20px); }
+
+        /* 充值记录区域 */
+        .recharge-box {
+            background: #fffbe6; border: 1px solid #ffe58f; border-radius: 12px;
+            padding: 10px; margin-bottom: 12px; font-size: 12px; color: #d48806;
+            display: flex; justify-content: space-between;
+        }
 
         /* URL 专属区域 */
-        .url-box {
-            background: var(--apple-red-light); border: 2px dashed #ffc8c8;
-            border-radius: 16px; padding: 12px 14px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
-        }
+        .url-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .url-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-        .url-label { font-size: 12px; color: var(--apple-red); font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;}
-        .url-label::before { content: '🔗'; font-size: 12px;}
-        .url-text { font-size: 13px; color: #8c5e5e; word-break: break-all; font-weight: 600;}
+        .url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
+        .url-text { font-size: 12px; color: #555; word-break: break-all; font-family: monospace;}
 
         /* 好吃模型 */
-        .model-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .model-item {
-            background: linear-gradient(135deg, #f0fbf0 0%, #dcf5dc 100%);
-            border: 2px solid #c2ebc2;
-            border-radius: 16px; padding: 12px 14px;
-            display: flex; justify-content: space-between; align-items: center;
-            word-break: break-all;
-            box-shadow: 0 2px 8px rgba(123, 201, 112, 0.1);
-        }
-        .model-name { font-size: 14px; color: #3e6b3e; font-weight: 700; display: flex; align-items: center; gap: 6px;}
-        .model-name::before { content: '🍏'; }
-        .model-price { font-size: 13px; color: #fff; font-weight: 800; background: var(--apple-red); padding: 3px 10px; border-radius: 10px; box-shadow: 0 2px 0 #d15a5a;}
+        .model-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .model-item { background: var(--apple-green-light); border: 1px solid #b7eb8f; border-radius: 10px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .model-name { font-size: 13px; color: #389e0d; font-weight: bold; }
+        .model-price { font-size: 12px; color: white; font-weight: bold; background: var(--apple-green); padding: 2px 8px; border-radius: 6px; }
 
         /* 普通备注 */
-        .remark-box { background: #fdf6f6; border-radius: 16px; padding: 14px; margin-bottom: 15px; border: 1px solid #f5e5e5;}
-        .remark-label { font-size: 12px; color: #b08a8a; font-weight: 800; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;}
-        .remark-label::before { content: '📝'; font-size: 12px;}
-        .remark-text { font-size: 13px; color: #6e5b5b; line-height: 1.6; word-break: break-all;}
+        .remark-box { background: #fcfcfc; border: 1px dashed #ddd; border-radius: 12px; padding: 10px; margin-bottom: 12px; }
+        .remark-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
+        .remark-text { font-size: 12px; color: #666; line-height: 1.5; word-break: break-all; }
 
-        .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 15px;}
-        .btn-small { 
-            background: white; border: 2px solid #e0e0e0; color: #888; 
-            padding: 8px 18px; border-radius: 14px; font-size: 14px; font-weight: 800; 
-            cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 0 #e0e0e0;
-        }
-        .btn-small:active { transform: translateY(2px); box-shadow: none; }
-        .btn-edit { border-color: var(--apple-green); color: var(--apple-green); box-shadow: 0 2px 0 var(--apple-green); }
-        .btn-delete { border-color: var(--apple-red); color: var(--apple-red); box-shadow: 0 2px 0 var(--apple-red); }
+        /* 操作按钮（平整对齐） */
+        .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .btn-small { background: white; border: 1px solid #ddd; color: #666; padding: 6px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .btn-edit { border-color: var(--apple-green); color: var(--apple-green); }
+        .btn-delete { border-color: var(--apple-red); color: var(--apple-red); }
 
         /* 弹窗表单 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: flex-end; }
-        .modal-content { background: #ffffff; width: 100%; max-height: 90vh; border-radius: 30px 30px 0 0; padding: 30px 25px; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-top: 6px solid var(--apple-green); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; padding: 25px; overflow-y: auto; animation: slideUp 0.3s; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 13px; color: #777; margin-bottom: 8px; font-weight: 800; }
-        .form-group input, .form-group textarea, .form-group select { 
-            width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 16px; 
-            font-size: 15px; outline: none; background: #fafafa; transition: border 0.2s; color: #444;
-        }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--apple-green); background: white; }
-        .form-group textarea { resize: vertical; min-height: 90px; }
-
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; background: #fafafa; }
+        .form-group input:focus { border-color: var(--apple-green); background: white; }
+        
         /* 动态表单行 */
-        .dynamic-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .dynamic-row { display: flex; gap: 8px; margin-bottom: 8px; }
         .input-model { flex: 2; }
         .input-price { flex: 1; }
-        .btn-remove-model { background: var(--apple-red-light); color: var(--apple-red); border: none; padding: 0 16px; border-radius: 16px; font-weight: bold; font-size: 20px; cursor: pointer; }
-        .btn-add-model { background: var(--apple-green-light); color: var(--apple-green); border: 2px dashed #a8e063; padding: 14px; border-radius: 16px; font-size: 14px; font-weight: 800; width: 100%; cursor: pointer; margin-bottom: 20px;}
+        .btn-remove-model { background: var(--apple-red-light); color: var(--apple-red); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-add-model { background: var(--apple-green-light); color: var(--apple-green); border: 1px dashed var(--apple-green); padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 15px;}
         
-        .modal-actions { display: flex; gap: 15px; margin-top: 30px; padding-bottom: 20px; }
-        .btn-cancel { flex: 1; background: #f0f0f0; color: #888; border: none; padding: 16px; border-radius: 18px; font-size: 16px; font-weight: 800; }
-        .btn-save { flex: 2; background: var(--apple-green); color: white; border: none; padding: 16px; border-radius: 18px; font-size: 16px; font-weight: 800; box-shadow: 0 4px 0 #5ba352; transition: all 0.2s;}
-        .btn-save:active { transform: translateY(4px); box-shadow: none;}
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-cancel { flex: 1; background: #f5f5f5; color: #666; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
+        .btn-save { flex: 2; background: var(--apple-green); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
 
-        .empty-state { text-align: center; color: var(--text-light); margin-top: 80px; font-size: 15px; font-weight: 600;}
+        .empty-state { text-align: center; color: #999; margin-top: 50px; font-size: 14px; }
         .hidden { display: none !important; }
+        
+        /* 拖拽时的样式 */
+        .dragging { opacity: 0.5; transform: scale(0.98); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-    <header>
+    <!-- 顶部看板 -->
+    <div class="top-bar">
         <h1>qiuqiuのapi</h1>
-    </header>
+        <div class="dashboard">
+            <div>总余额<span class="green-text" id="totalBalance">0</span></div>
+            <div>总站点<span id="totalSites">0</span></div>
+            <div>待签到<span style="color: var(--apple-red);" id="totalUnsign">0</span></div>
+        </div>
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="toolbar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜站点/模型/备注..." oninput="renderSites()">
+        </div>
+        <button class="btn-filter" id="filterBtn" onclick="toggleFilter()">🍏 仅看未签</button>
+        <button class="btn-reset" onclick="resetSigns()">🔄 重置签到</button>
+    </div>
 
     <div id="siteList"></div>
-
     <button class="fab" onclick="openModal()">+</button>
 
-    <!-- 添加/编辑 弹窗 -->
+    <!-- 弹窗 -->
     <div class="modal" id="formModal">
         <div class="modal-content">
-            <h2 id="modalTitle" style="margin-bottom: 25px; font-size: 22px; text-align: center; color: var(--apple-green); font-weight: 900;">添加新站点</h2>
-            
+            <h2 id="modalTitle" style="margin-bottom: 20px; text-align: center; color: var(--apple-green);">添加新站点</h2>
             <input type="hidden" id="editId">
             
-            <div class="form-group">
-                <label>站点名称 *</label>
-                <input type="text" id="siteName" placeholder="例如：某某网">
-            </div>
+            <div class="form-group"><label>站点名称 *</label><input type="text" id="siteName" placeholder="例如：某某网"></div>
+            <div class="form-group"><label>站点链接（访问用）</label><input type="url" id="siteUrl" placeholder="https://..."></div>
             
-            <div class="form-group">
-                <label>站点链接（用于点击访问）</label>
-                <input type="url" id="siteUrl" placeholder="https://...">
-            </div>
-
             <div class="form-group">
                 <label>是否支持签到？</label>
-                <select id="supportSign" onchange="toggleSignOptions()">
-                    <option value="是">支持签到</option>
-                    <option value="否">不支持签到</option>
-                </select>
+                <select id="supportSign" onchange="toggleSignOptions()"><option value="是">支持签到</option><option value="否">不支持签到</option></select>
             </div>
-
             <div id="signDetailGroup" class="form-group">
                 <label>今日是否已签到？</label>
-                <select id="isSigned">
-                    <option value="否">还没签到</option>
-                    <option value="是">已签到 ✅</option>
+                <select id="isSigned"><option value="否">未签到</option><option value="是">已签到 ✅</option></select>
+            </div>
+            <div id="conditionGroup" class="form-group"><label>签到条件 / 限制</label><input type="text" id="signCondition" placeholder="例如：需满10元"></div>
+            
+            <div class="form-group"><label>当前余额 / 积分</label><input type="text" id="balance" placeholder="例如：25.5"></div>
+            
+            <!-- 充值记录 -->
+            <div class="form-group" style="background: #fffbe6; padding: 15px; border-radius: 12px; border: 1px solid #ffe58f;">
+                <label style="color: #d48806;">💰 是否充值过？</label>
+                <select id="hasRecharge" onchange="toggleRechargeOptions()" style="margin-bottom: 10px;">
+                    <option value="否">没充过值</option>
+                    <option value="是">充过值（记录一笔）</option>
                 </select>
+                <div id="rechargeDetail" class="hidden">
+                    <input type="date" id="rechargeDate" style="margin-bottom: 8px;">
+                    <input type="text" id="rechargeAmount" placeholder="充值金额，例如：50">
+                </div>
             </div>
-            
-            <div id="conditionGroup" class="form-group">
-                <label>签到条件 / 限制</label>
-                <input type="text" id="signCondition" placeholder="例如：需满10元 / 每天一次">
+
+            <div class="form-group" style="background: #fafafa; padding: 15px; border-radius: 12px;">
+                <label>专属 URL（提取用）</label>
+                <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white;">
             </div>
-            
+
             <div class="form-group">
-                <label>当前余额 / 积分</label>
-                <input type="text" id="balance" placeholder="例如：25.5">
-            </div>
-
-            <div class="form-group" style="background: var(--apple-red-light); padding: 15px; border-radius: 16px; border: 2px dashed #ffc8c8;">
-                <label style="color: var(--apple-red);">专属 URL（提取用）</label>
-                <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white; border-color: transparent;">
-            </div>
-
-            <!-- 动态好吃模型 + 价格 -->
-            <div class="form-group" style="margin-top: 25px;">
                 <label style="color: var(--apple-green);">🍏 好吃模型列表</label>
                 <div id="modelContainer"></div>
                 <button type="button" class="btn-add-model" onclick="addModelInput()">+ 添加一个模型</button>
             </div>
             
-            <div class="form-group">
-                <label>额外备注</label>
-                <textarea id="remark" placeholder="记点什么..."></textarea>
-            </div>
+            <div class="form-group"><label>额外备注</label><textarea id="remark" placeholder="记点什么..."></textarea></div>
             
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal()">取消</button>
@@ -327,10 +262,46 @@
     </div>
 
     <script>
-        // 升级 V6 版本（苹果风）
-        let sites = JSON.parse(localStorage.getItem('mySitesV6')) || []; 
+        let sites = JSON.parse(localStorage.getItem('mySitesV7')) || []; 
         let isEditing = false;
+        let isFiltering = false;
+        let searchKeyword = '';
 
+        // 初始化拖拽
+        let draggedIndex = null;
+
+        function updateDashboard() {
+            let totalB = 0;
+            let unsignCount = 0;
+            sites.forEach(s => {
+                const b = parseFloat(s.balance);
+                if(!isNaN(b)) totalB += b;
+                if (s.supportSign === '是' && s.isSigned === '否') unsignCount++;
+            });
+            document.getElementById('totalBalance').innerText = totalB.toFixed(1);
+            document.getElementById('totalSites').innerText = sites.length;
+            document.getElementById('totalUnsign').innerText = unsignCount;
+        }
+
+        // 搜索和筛选逻辑
+        function toggleFilter() {
+            isFiltering = !isFiltering;
+            document.getElementById('filterBtn').classList.toggle('active', isFiltering);
+            renderSites();
+        }
+
+        function resetSigns() {
+            if(confirm('确定要把所有站点的签到状态重置为“未签到”吗？')){
+                sites.forEach(s => { if(s.supportSign === '是') s.isSigned = '否'; });
+                saveData();
+                renderSites();
+            }
+        }
+
+        function toggleRechargeOptions() {
+            const has = document.getElementById('hasRecharge').value === '是';
+            document.getElementById('rechargeDetail').classList.toggle('hidden', !has);
+        }
         function toggleSignOptions() {
             const isSupport = document.getElementById('supportSign').value === '是';
             document.getElementById('signDetailGroup').classList.toggle('hidden', !isSupport);
@@ -352,33 +323,38 @@
         function renderSites() {
             const list = document.getElementById('siteList');
             list.innerHTML = '';
-
-            if (sites.length === 0) {
-                list.innerHTML = '<div class="empty-state">空空如也~ 点击右下角 🍎 添加吧</div>';
-                return;
-            }
+            
+            // 获取搜索词
+            searchKeyword = document.getElementById('searchInput').value.toLowerCase();
 
             sites.forEach((site, index) => {
+                // 1. 筛选逻辑：只看未签
+                if (isFiltering && (!site.supportSign || site.supportSign === '否' || site.isSigned === '是')) {
+                    return; 
+                }
+
+                // 2. 搜索逻辑：搜索站点名、模型名、备注、URL
+                let searchContent = site.name + (site.remark||'') + (site.customUrl||'');
+                if(site.foodModels) {
+                    site.foodModels.forEach(m => { searchContent += (m.name + m.price); });
+                }
+                if (searchKeyword && !searchContent.toLowerCase().includes(searchKeyword)) {
+                    return;
+                }
+
+                // 渲染逻辑
                 let signHtml = '';
                 if (site.supportSign === '是') {
                     const isSigned = site.isSigned === '是';
-                    const textClass = isSigned ? 'signed' : 'unsigned';
-                    const textStr = isSigned ? '已签到' : '未签到';
-                    const switchActive = isSigned ? 'active' : '';
-                    
                     signHtml = `
                     <div class="info-row">
                         <span class="info-label">签到状态</span>
                         <div class="switch-container" onclick="event.stopPropagation(); toggleSign(${index})">
-                            <span class="switch-text ${textClass}">${textStr}</span>
-                            <div class="toggle-switch ${switchActive}"></div>
+                            <span class="switch-text ${isSigned ? 'signed' : 'unsigned'}">${isSigned ? '已签到' : '未签到'}</span>
+                            <div class="toggle-switch ${isSigned ? 'active' : ''}"></div>
                         </div>
                     </div>
-                    ${site.condition ? `
-                    <div class="info-row">
-                        <span class="info-label">签到条件</span>
-                        <span class="info-value" style="color: #c48282; font-size: 13px;">${site.condition}</span>
-                    </div>` : ''}
+                    ${site.condition ? `<div class="info-row"><span class="info-label">条件</span><span class="info-value" style="color: #d48806;">${site.condition}</span></div>` : ''}
                     `;
                 }
 
@@ -393,59 +369,53 @@
                     if(models) modelHtml = `<div class="model-grid">${models}</div>`;
                 }
 
-                let urlHtml = '';
-                if (site.customUrl) {
-                    urlHtml = `
+                let urlHtml = site.customUrl ? `
                     <div class="url-box">
-                        <div class="url-info">
-                            <div class="url-label">专属 URL</div>
-                            <div class="url-text">${site.customUrl}</div>
-                        </div>
+                        <div class="url-info"><div class="url-label">专属 URL</div><div class="url-text">${site.customUrl}</div></div>
                         <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.customUrl}', this)">📋 复制</button>
-                    </div>`;
-                }
+                    </div>` : '';
+
+                let rechargeHtml = (site.hasRecharge === '是' && site.rechargeAmount) ? `
+                    <div class="recharge-box">
+                        <span>充值记录 (${site.rechargeDate || '未知日期'})</span>
+                        <span>金额: ${site.rechargeAmount}</span>
+                    </div>` : '';
 
                 const remarkHtml = site.remark ? `
-                    <div class="remark-box">
-                        <div class="remark-label">备注信息</div>
-                        <div class="remark-text">${site.remark}</div>
-                    </div>
+                    <div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>
                 ` : '';
 
                 const card = document.createElement('div');
                 const isCollapsed = site.isCollapsed ? 'collapsed' : '';
-                card.className = `card ${isCollapsed}`;
+                // 如果支持签到且未签到，左侧加红条
+                const cardClass = (site.supportSign === '是' && site.isSigned === '否') ? 'unsign-card' : '';
+                card.className = `card ${isCollapsed} ${cardClass}`;
                 
-                // 苹果图标切换
-                const appleIcon = isCollapsed ? '🍎' : '🍏';
-                
+                // 拖拽属性
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-index', index);
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('drop', handleDrop);
+
                 card.innerHTML = `
                     <div class="card-header" onclick="toggleCollapse(${index})">
-                        <div class="header-left">
-                            <div class="site-name">${site.name}</div>
-                        </div>
-                        <div class="toggle-icon">${appleIcon}</div>
+                        <div class="site-name">${site.name}</div>
+                        <div class="toggle-icon">${isCollapsed ? '🍎' : '🍏'}</div>
                     </div>
-                    
                     <div class="card-body">
                         <div class="link-row">
                             ${site.url ? `
-                            <a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 点击访问</a>
-                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.url}', this)">📋 复制链接</button>
+                            <a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 访问</a>
+                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.url}', this)">📋 复制</button>
                             ` : ''}
                         </div>
-                        
                         ${signHtml}
-                        
-                        <div class="info-row">
-                            <span class="info-label">当前余额</span>
-                            <span class="info-value balance">${site.balance || '0'}</span>
-                        </div>
-
+                        <div class="info-row"><span class="info-label">当前余额</span><span class="balance">${site.balance || '0'}</span></div>
+                        ${rechargeHtml}
                         ${urlHtml}
                         ${modelHtml}
                         ${remarkHtml}
-                        
                         <div class="actions">
                             <button class="btn-small btn-edit" onclick="event.stopPropagation(); editSite(${index})">编辑</button>
                             <button class="btn-small btn-delete" onclick="event.stopPropagation(); deleteSite(${index})">删除</button>
@@ -454,41 +424,66 @@
                 `;
                 list.appendChild(card);
             });
+
+            if (list.innerHTML === '') {
+                list.innerHTML = '<div class="empty-state">没有找到符合条件的站点~</div>';
+            }
+            updateDashboard();
         }
+
+        // --- 拖拽逻辑 ---
+        function handleDragStart(e) {
+            draggedIndex = this.getAttribute('data-index');
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedIndex);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); // 必须阻止默认行为才能触发 drop
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const targetCard = e.target.closest('.card');
+            if (targetCard && draggedIndex !== null) {
+                const targetIndex = targetCard.getAttribute('data-index');
+                if (draggedIndex !== targetIndex) {
+                    // 交换数组中的位置
+                    const draggedItem = sites[draggedIndex];
+                    sites.splice(draggedIndex, 1);
+                    sites.splice(targetIndex, 0, draggedItem);
+                    saveData();
+                    renderSites();
+                }
+            }
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging'));
+            draggedIndex = null;
+        }
+        // ---------------
 
         function toggleSign(index) {
             sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
-            localStorage.setItem('mySitesV6', JSON.stringify(sites));
-            renderSites(); 
+            saveData(); renderSites(); 
         }
 
         function toggleCollapse(index) {
             sites[index].isCollapsed = !sites[index].isCollapsed;
-            localStorage.setItem('mySitesV6', JSON.stringify(sites));
-            renderSites();
+            saveData(); renderSites();
         }
 
         function copyText(text, btnElement) {
-            let copyStr = text;
-            if (!text.startsWith('http') && text.includes('.')) {
-                copyStr = 'https://' + text;
-            }
-
+            let copyStr = text.startsWith('http') || !text.includes('.') ? text : 'https://' + text;
             navigator.clipboard.writeText(copyStr).then(() => {
                 const originalHTML = btnElement.innerHTML;
-                btnElement.innerHTML = '🍏 已复制';
-                btnElement.style.color = 'var(--apple-green)';
-                btnElement.style.background = 'var(--apple-green-light)';
-                btnElement.style.borderColor = '#c2ebc2';
-                setTimeout(() => {
-                    btnElement.innerHTML = originalHTML;
-                    btnElement.style.color = '';
-                    btnElement.style.background = '';
-                    btnElement.style.borderColor = '';
-                }, 1500);
-            }).catch(err => {
-                alert('复制失败，请手动长按复制');
-            });
+                btnElement.innerHTML = '✅ 已复制';
+                setTimeout(() => btnElement.innerHTML = originalHTML, 1500);
+            }).catch(() => alert('复制失败，请长按复制'));
+        }
+
+        function saveData() {
+            localStorage.setItem('mySitesV7', JSON.stringify(sites));
         }
 
         function openModal() {
@@ -504,34 +499,31 @@
             document.getElementById('customUrl').value = '';
             document.getElementById('remark').value = '';
             
+            // 充值记录重置
+            document.getElementById('hasRecharge').value = '否';
+            document.getElementById('rechargeDate').value = new Date().toISOString().split('T')[0]; // 默认今天
+            document.getElementById('rechargeAmount').value = '';
+            toggleRechargeOptions();
+
             document.getElementById('modelContainer').innerHTML = '';
             addModelInput();
-
             toggleSignOptions(); 
             document.getElementById('formModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('formModal').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('formModal').style.display = 'none'; }
 
         function saveSite() {
             const name = document.getElementById('siteName').value.trim();
-            if (!name) {
-                alert('站点名称不能为空哦！');
-                return;
-            }
+            if (!name) return alert('站点名称不能为空哦！');
 
             const modelNames = document.querySelectorAll('.model-name-input');
             const modelPrices = document.querySelectorAll('.model-price-input');
-            
             let foodModels = [];
             for (let i = 0; i < modelNames.length; i++) {
                 const mName = modelNames[i].value.trim();
                 const mPrice = modelPrices[i].value.trim();
-                if (mName || mPrice) {
-                    foodModels.push({ name: mName || '未命名', price: mPrice });
-                }
+                if (mName || mPrice) foodModels.push({ name: mName || '未命名', price: mPrice });
             }
 
             const siteData = {
@@ -541,21 +533,19 @@
                 isSigned: document.getElementById('isSigned').value,
                 condition: document.getElementById('signCondition').value.trim(),
                 balance: document.getElementById('balance').value.trim(),
+                hasRecharge: document.getElementById('hasRecharge').value,
+                rechargeDate: document.getElementById('rechargeDate').value,
+                rechargeAmount: document.getElementById('rechargeAmount').value.trim(),
                 customUrl: document.getElementById('customUrl').value.trim(),
                 foodModels: foodModels,
                 remark: document.getElementById('remark').value.trim(),
                 isCollapsed: isEditing ? sites[document.getElementById('editId').value].isCollapsed : false 
             };
 
-            if (isEditing) {
-                sites[document.getElementById('editId').value] = siteData;
-            } else {
-                sites.push(siteData);
-            }
+            if (isEditing) sites[document.getElementById('editId').value] = siteData;
+            else sites.push(siteData);
 
-            localStorage.setItem('mySitesV6', JSON.stringify(sites));
-            closeModal();
-            renderSites();
+            saveData(); closeModal(); renderSites();
         }
 
         function editSite(index) {
@@ -573,12 +563,14 @@
             document.getElementById('customUrl').value = site.customUrl || '';
             document.getElementById('remark').value = site.remark || '';
             
+            document.getElementById('hasRecharge').value = site.hasRecharge || '否';
+            document.getElementById('rechargeDate').value = site.rechargeDate || '';
+            document.getElementById('rechargeAmount').value = site.rechargeAmount || '';
+            toggleRechargeOptions();
+
             document.getElementById('modelContainer').innerHTML = '';
-            if (site.foodModels && site.foodModels.length > 0) {
-                site.foodModels.forEach(m => addModelInput(m.name, m.price));
-            } else {
-                addModelInput();
-            }
+            if (site.foodModels && site.foodModels.length > 0) site.foodModels.forEach(m => addModelInput(m.name, m.price));
+            else addModelInput();
             
             toggleSignOptions();
             document.getElementById('formModal').style.display = 'flex';
@@ -586,9 +578,7 @@
 
         function deleteSite(index) {
             if (confirm('确定要删除这个站点吗？')) {
-                sites.splice(index, 1);
-                localStorage.setItem('mySitesV6', JSON.stringify(sites));
-                renderSites();
+                sites.splice(index, 1); saveData(); renderSites();
             }
         }
 
