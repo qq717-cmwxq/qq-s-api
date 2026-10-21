@@ -3,92 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的专属站点库</title>
+    <title>qiuqiuのapi</title>
     <style>
-        /* 基础设置与配色：淡蓝与淡粉简约风 */
+        /* 全新升级的马卡龙配色 */
         :root {
-            --bg-color: #f4f8fb; 
-            --card-bg: #ffffff;
-            --primary-blue: #a3c9e6;
-            --primary-pink: #f5b8c4;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --blue-text: #5e9bcc;
+            --pink-text: #e3879e;
             --text-main: #4a5568;
-            --text-light: #8895a7;
+            --text-light: #a0aec0;
+            --shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 15px; padding-bottom: 80px; }
+        body { 
+            background: var(--bg-gradient); 
+            background-attachment: fixed;
+            color: var(--text-main); 
+            padding: 20px 15px; 
+            padding-bottom: 100px; 
+            min-height: 100vh;
+        }
 
         /* 顶部标题 */
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
-        h1 { font-size: 22px; color: var(--primary-blue); text-shadow: 1px 1px 2px rgba(163,201,230,0.3); }
+        header { margin-bottom: 25px; padding: 0 5px; text-align: center; }
+        h1 { font-size: 26px; font-weight: 800; letter-spacing: 1px; background: -webkit-linear-gradient(45deg, var(--blue-text), var(--pink-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* 添加按钮 */
-        .btn-add { background: var(--primary-pink); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(245,184,196,0.4); cursor: pointer; }
-        .btn-add:active { transform: scale(0.95); }
+        /* 悬浮添加按钮 (更有 App 的感觉) */
+        .fab { 
+            position: fixed; bottom: 30px; right: 20px; 
+            width: 60px; height: 60px; border-radius: 50%; 
+            background: linear-gradient(135deg, #a3c9e6, #f5b8c4); 
+            color: white; font-size: 30px; line-height: 60px; text-align: center; 
+            box-shadow: 0 6px 20px rgba(245,184,196,0.6); 
+            border: none; cursor: pointer; z-index: 99;
+            transition: transform 0.2s;
+        }
+        .fab:active { transform: scale(0.9); }
 
         /* 站点卡片 */
-        .card { background: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-left: 5px solid var(--primary-blue); position: relative; transition: all 0.3s; }
-        .card.pink-border { border-left-color: var(--primary-pink); }
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            padding: 20px; 
+            margin-bottom: 18px; 
+            box-shadow: var(--shadow); 
+            position: relative; 
+            overflow: hidden;
+        }
+        /* 卡片顶部装饰条 */
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--blue-text), var(--pink-text));
+        }
         
         /* 卡片标题和链接 */
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed #edf2f7; padding-bottom: 10px; }
-        .site-name { font-size: 18px; font-weight: 600; color: #2d3748; }
-        .site-link { font-size: 12px; color: var(--primary-blue); text-decoration: none; background: #eef7fc; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-top: 5px; word-break: break-all; }
+        .card-header { display: flex; flex-direction: column; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; }
+        .site-name { font-size: 20px; font-weight: 700; color: #2d3748; margin-bottom: 8px; }
+        .site-link { 
+            font-size: 13px; color: var(--blue-text); text-decoration: none; 
+            background: rgba(163, 201, 230, 0.15); padding: 6px 12px; 
+            border-radius: 10px; display: inline-block; align-self: flex-start; 
+            word-break: break-all; font-weight: 500;
+        }
         
         /* 信息列表 */
-        .info-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
-        .info-label { color: var(--text-light); }
-        .info-value { font-weight: 500; }
-        .balance { color: #e53e3e; font-weight: bold; font-size: 16px; }
-        .remark { font-size: 13px; color: #718096; background: #f7fafc; padding: 8px; border-radius: 8px; margin-top: 10px; margin-bottom: 10px; word-break: break-all; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 12px; }
+        .info-label { color: var(--text-light); font-weight: 500; }
+        .info-value { font-weight: 600; color: #4a5568; }
+        .balance { color: #ed8936; font-weight: 800; font-size: 18px; }
+        
+        /* 新增：好吃模型专属区域 */
+        .model-box {
+            background: linear-gradient(120deg, #fffcf5 0%, #fff8e6 100%);
+            border: 1px solid #ffe8a1;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .model-label { font-size: 12px; color: #d69e2e; font-weight: bold; margin-bottom: 5px; display: flex; align-items: center;}
+        .model-label::before { content: '✨'; margin-right: 5px; }
+        .model-text { font-size: 14px; color: #975a16; line-height: 1.5; word-break: break-all; }
+
+        /* 普通备注区域 */
+        .remark-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .remark-label { font-size: 12px; color: var(--text-light); font-weight: bold; margin-bottom: 5px; }
+        .remark-text { font-size: 13px; color: #718096; line-height: 1.5; word-break: break-all; }
 
         /* 操作按钮区 */
-        .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-        .btn-small { background: none; border: 1px solid #e2e8f0; color: var(--text-light); padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; }
-        .btn-edit { border-color: var(--primary-blue); color: var(--primary-blue); }
-        .btn-delete { border-color: var(--primary-pink); color: var(--primary-pink); }
+        .actions { display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-small { 
+            background: none; border: 1.5px solid #e2e8f0; color: #718096; 
+            padding: 8px 16px; border-radius: 12px; font-size: 14px; 
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-edit { border-color: var(--blue-text); color: var(--blue-text); }
+        .btn-edit:active { background: rgba(94,155,204,0.1); }
+        .btn-delete { border-color: var(--pink-text); color: var(--pink-text); }
+        .btn-delete:active { background: rgba(227,135,158,0.1); }
+
+        /* 签到状态标签 */
+        .sign-status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-yes { background: #e6fffa; color: #38b2ac; }
+        .status-no { background: #fff5f5; color: #e53e3e; }
 
         /* 弹窗表单 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(3px); z-index: 100; justify-content: center; align-items: flex-end; }
-        .modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 20px 20px 0 0; padding: 20px; overflow-y: auto; animation: slideUp 0.3s ease; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; padding: 25px; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-light); margin-bottom: 5px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 15px; outline: none; background: #f8fafc; }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary-blue); background: white; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; padding: 14px; border: 1.5px solid #edf2f7; border-radius: 12px; 
+            font-size: 15px; outline: none; background: #f8fafc; transition: border 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue-text); background: white; }
         .form-group textarea { resize: vertical; min-height: 80px; }
         
         /* 弹窗底部按钮 */
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; padding-bottom: 20px; }
-        .btn-cancel { flex: 1; background: #edf2f7; color: var(--text-light); border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; }
-        .btn-save { flex: 2; background: var(--primary-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; }
-        
-        /* 签到状态提示 */
-        .sign-status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-        .status-yes { background: #e6fffa; color: #38b2ac; }
-        .status-no { background: #fffaf0; color: #d69e2e; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 25px; padding-bottom: 20px; }
+        .btn-cancel { flex: 1; background: #f1f5f9; color: #64748b; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: bold; }
+        .btn-save { flex: 2; background: linear-gradient(135deg, #a3c9e6, #8bb8dc); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(163,201,230,0.4); }
 
         /* 空状态 */
-        .empty-state { text-align: center; color: var(--text-light); margin-top: 50px; font-size: 15px; }
+        .empty-state { text-align: center; color: var(--text-light); margin-top: 80px; font-size: 15px; }
+
+        /* 隐藏元素 */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🌸 我的专属站点</h1>
-        <button class="btn-add" onclick="openModal()">+ 添加</button>
+        <h1>qiuqiuのapi</h1>
     </header>
 
     <div id="siteList">
         <!-- 站点列表将在这里生成 -->
     </div>
 
+    <!-- 悬浮添加按钮 -->
+    <button class="fab" onclick="openModal()">+</button>
+
     <!-- 添加/编辑 弹窗 -->
     <div class="modal" id="formModal">
         <div class="modal-content">
-            <h2 id="modalTitle" style="margin-bottom: 20px; font-size: 18px; color: var(--primary-blue);">添加新站点</h2>
+            <h2 id="modalTitle" style="margin-bottom: 20px; font-size: 20px; text-align: center; color: var(--blue-text);">添加新站点</h2>
             
             <input type="hidden" id="editId">
             
@@ -101,16 +169,26 @@
                 <label>站点链接 (URL)</label>
                 <input type="url" id="siteUrl" placeholder="https://...">
             </div>
-            
+
+            <!-- 签到总开关 -->
             <div class="form-group">
-                <label>今天是否已签到？</label>
-                <select id="isSigned" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 15px; outline: none; background: #f8fafc;">
+                <label>是否支持签到？</label>
+                <select id="supportSign" onchange="toggleSignOptions()" style="width: 100%; padding: 14px; border: 1.5px solid #edf2f7; border-radius: 12px; font-size: 15px; outline: none; background: #f8fafc;">
+                    <option value="是">支持签到</option>
+                    <option value="否">不支持签到</option>
+                </select>
+            </div>
+
+            <!-- 仅在支持签到时显示 -->
+            <div id="signDetailGroup" class="form-group">
+                <label>今日是否已签到？</label>
+                <select id="isSigned" style="width: 100%; padding: 14px; border: 1.5px solid #edf2f7; border-radius: 12px; font-size: 15px; outline: none; background: #f8fafc;">
                     <option value="否">还没签到</option>
                     <option value="是">已签到 ✅</option>
                 </select>
             </div>
             
-            <div class="form-group">
+            <div id="conditionGroup" class="form-group">
                 <label>签到条件 / 限制</label>
                 <input type="text" id="signCondition" placeholder="例如：需满10元 / 每天一次">
             </div>
@@ -118,6 +196,12 @@
             <div class="form-group">
                 <label>当前余额 / 积分</label>
                 <input type="text" id="balance" placeholder="例如：25.5">
+            </div>
+
+            <!-- 新增：好吃模型 -->
+            <div class="form-group" style="background: #fff8e6; padding: 15px; border-radius: 12px; border: 1px solid #ffe8a1;">
+                <label style="color: #d69e2e;">✨ 好吃模型</label>
+                <input type="text" id="foodModel" placeholder="记录好吃模型..." style="background: white; border-color: #ffe8a1;">
             </div>
             
             <div class="form-group">
@@ -134,8 +218,23 @@
 
     <script>
         // 初始化数据
-        let sites = JSON.parse(localStorage.getItem('mySites')) || [];
+        let sites = JSON.parse(localStorage.getItem('mySitesV2')) || []; // 更新了存储名，防止老数据冲突
         let isEditing = false;
+
+        // 控制签到选项的显示/隐藏
+        function toggleSignOptions() {
+            const isSupport = document.getElementById('supportSign').value === '是';
+            const signDetailGroup = document.getElementById('signDetailGroup');
+            const conditionGroup = document.getElementById('conditionGroup');
+            
+            if (isSupport) {
+                signDetailGroup.classList.remove('hidden');
+                conditionGroup.classList.remove('hidden');
+            } else {
+                signDetailGroup.classList.add('hidden');
+                conditionGroup.classList.add('hidden');
+            }
+        }
 
         // 渲染页面
         function renderSites() {
@@ -143,23 +242,16 @@
             list.innerHTML = '';
 
             if (sites.length === 0) {
-                list.innerHTML = '<div class="empty-state">还没有站点哦，点击右上角添加吧~</div>';
+                list.innerHTML = '<div class="empty-state">空空如也~ 点击右下角 + 号添加吧</div>';
                 return;
             }
 
             sites.forEach((site, index) => {
-                const isPink = index % 2 !== 0; // 交替边框颜色
-                const signStatus = site.isSigned === '是' ? '<span class="sign-status status-yes">已签到</span>' : '<span class="sign-status status-no">未签到</span>';
-                
-                const card = document.createElement('div');
-                card.className = `card ${isPink ? 'pink-border' : ''}`;
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div>
-                            <div class="site-name">${site.name}</div>
-                            ${site.url ? `<a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 点击访问</a>` : ''}
-                        </div>
-                    </div>
+                // 只有当“支持签到”时，才显示签到状态
+                let signHtml = '';
+                if (site.supportSign === '是') {
+                    const signStatus = site.isSigned === '是' ? '<span class="sign-status status-yes">今日已签到</span>' : '<span class="sign-status status-no">今日未签到</span>';
+                    signHtml = `
                     <div class="info-row">
                         <span class="info-label">签到状态</span>
                         <span class="info-value">${signStatus}</span>
@@ -167,13 +259,44 @@
                     ${site.condition ? `
                     <div class="info-row">
                         <span class="info-label">签到条件</span>
-                        <span class="info-value" style="color: #d69e2e;">${site.condition}</span>
+                        <span class="info-value" style="color: #d69e2e; font-size: 13px;">${site.condition}</span>
                     </div>` : ''}
+                    `;
+                }
+
+                // 好吃模型 HTML
+                const modelHtml = site.foodModel ? `
+                    <div class="model-box">
+                        <div class="model-label">好吃模型</div>
+                        <div class="model-text">${site.foodModel}</div>
+                    </div>
+                ` : '';
+
+                // 备注 HTML
+                const remarkHtml = site.remark ? `
+                    <div class="remark-box">
+                        <div class="remark-label">备注</div>
+                        <div class="remark-text">${site.remark}</div>
+                    </div>
+                ` : '';
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="site-name">${site.name}</div>
+                        ${site.url ? `<a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 点击访问</a>` : ''}
+                    </div>
+                    
+                    ${signHtml}
+                    
                     <div class="info-row">
                         <span class="info-label">当前余额</span>
                         <span class="info-value balance">${site.balance || '0'}</span>
                     </div>
-                    ${site.remark ? `<div class="remark">备注：${site.remark}</div>` : ''}
+
+                    ${modelHtml}
+                    ${remarkHtml}
                     
                     <div class="actions">
                         <button class="btn-small btn-edit" onclick="editSite(${index})">编辑</button>
@@ -191,10 +314,14 @@
             document.getElementById('editId').value = '';
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
+            document.getElementById('supportSign').value = '是';
             document.getElementById('isSigned').value = '否';
             document.getElementById('signCondition').value = '';
             document.getElementById('balance').value = '';
+            document.getElementById('foodModel').value = '';
             document.getElementById('remark').value = '';
+            
+            toggleSignOptions(); // 重置显示状态
             document.getElementById('formModal').style.display = 'flex';
         }
 
@@ -214,9 +341,11 @@
             const siteData = {
                 name: name,
                 url: document.getElementById('siteUrl').value.trim(),
+                supportSign: document.getElementById('supportSign').value,
                 isSigned: document.getElementById('isSigned').value,
                 condition: document.getElementById('signCondition').value.trim(),
                 balance: document.getElementById('balance').value.trim(),
+                foodModel: document.getElementById('foodModel').value.trim(),
                 remark: document.getElementById('remark').value.trim()
             };
 
@@ -227,7 +356,7 @@
                 sites.push(siteData);
             }
 
-            localStorage.setItem('mySites', JSON.stringify(sites));
+            localStorage.setItem('mySitesV2', JSON.stringify(sites));
             closeModal();
             renderSites();
         }
@@ -241,11 +370,14 @@
             document.getElementById('editId').value = index;
             document.getElementById('siteName').value = site.name;
             document.getElementById('siteUrl').value = site.url || '';
+            document.getElementById('supportSign').value = site.supportSign || '是';
             document.getElementById('isSigned').value = site.isSigned || '否';
             document.getElementById('signCondition').value = site.condition || '';
             document.getElementById('balance').value = site.balance || '';
+            document.getElementById('foodModel').value = site.foodModel || '';
             document.getElementById('remark').value = site.remark || '';
             
+            toggleSignOptions(); // 更新显示状态
             document.getElementById('formModal').style.display = 'flex';
         }
 
@@ -253,7 +385,7 @@
         function deleteSite(index) {
             if (confirm('确定要删除这个站点吗？')) {
                 sites.splice(index, 1);
-                localStorage.setItem('mySites', JSON.stringify(sites));
+                localStorage.setItem('mySitesV2', JSON.stringify(sites));
                 renderSites();
             }
         }
