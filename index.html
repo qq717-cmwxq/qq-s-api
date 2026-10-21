@@ -29,7 +29,6 @@
         header { margin-bottom: 25px; padding: 0 5px; text-align: center; }
         h1 { font-size: 26px; font-weight: 800; letter-spacing: 1px; background: -webkit-linear-gradient(45deg, var(--blue-text), var(--pink-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* 悬浮添加按钮 */
         .fab { 
             position: fixed; bottom: 30px; right: 20px; 
             width: 60px; height: 60px; border-radius: 50%; 
@@ -41,92 +40,107 @@
         }
         .fab:active { transform: scale(0.9); }
 
-        /* 站点卡片 */
+        /* 卡片样式 */
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; 
-            padding: 20px; 
             margin-bottom: 18px; 
             box-shadow: var(--shadow); 
             position: relative; 
             overflow: hidden;
+            transition: all 0.3s ease;
         }
         .card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
             background: linear-gradient(90deg, var(--blue-text), var(--pink-text));
+            z-index: 10;
         }
         
-        .card-header { display: flex; flex-direction: column; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; }
-        .site-name { font-size: 20px; font-weight: 700; color: #2d3748; margin-bottom: 8px; }
+        /* 头部（支持点击折叠） */
+        .card-header { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; cursor: pointer; user-select: none;
+        }
+        .header-left { display: flex; flex-direction: column; gap: 8px; }
+        .site-name { font-size: 20px; font-weight: 700; color: #2d3748; }
+        .toggle-icon { color: var(--text-light); font-size: 20px; transition: transform 0.3s; }
+        .card.collapsed .toggle-icon { transform: rotate(-90deg); }
         
-        /* 链接容器区 */
-        .link-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;}
+        /* 内容区（可折叠） */
+        .card-body {
+            padding: 0 20px 20px 20px;
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        .card.collapsed .card-body { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 链接行 */
+        .link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px;}
         .site-link { 
-            font-size: 12px; color: var(--blue-text); text-decoration: none; 
-            background: rgba(163, 201, 230, 0.15); padding: 6px 10px; 
-            border-radius: 8px; display: inline-block; 
-            word-break: break-all; font-weight: 500;
+            font-size: 13px; color: var(--blue-text); text-decoration: none; 
+            background: rgba(163, 201, 230, 0.15); padding: 8px 12px; 
+            border-radius: 8px; font-weight: 600;
         }
         
-        /* 美化后的复制按钮，强制不换行 */
+        /* 复制按钮（已优化：不换行，加宽） */
         .btn-copy { 
-            background: #e2e8f0; border: none; color: #4a5568; 
-            padding: 6px 12px; border-radius: 20px; font-size: 12px; 
-            cursor: pointer; transition: all 0.2s; font-weight: 600;
-            white-space: nowrap; /* 核心：防止文字折行 */
-            flex-shrink: 0; /* 防止按钮被挤压 */
-            display: inline-flex; align-items: center; justify-content: center;
+            background: #f1f5f9; border: 1px solid #e2e8f0; color: #64748b; 
+            padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            white-space: nowrap; /* 绝对不换行 */
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+            flex-shrink: 0;
         }
-        .btn-copy:active { background: #cbd5e0; transform: scale(0.95); }
-        .btn-copy.copied { background: #c6f6d5; color: #2f855a; }
+        .btn-copy:active { background: #e2e8f0; transform: scale(0.96); }
         
         .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 12px; }
-        .info-label { color: var(--text-light); font-weight: 500; }
+        .info-label { color: var(--text-light); font-weight: 500; flex-shrink: 0;}
         .info-value { font-weight: 600; color: #4a5568; }
         .balance { color: #ed8936; font-weight: 800; font-size: 18px; }
 
-        /* URL 专属区域（放在余额下面） */
+        /* 一键切换签到按钮 */
+        .btn-toggle-sign {
+            border: none; padding: 6px 14px; border-radius: 20px; font-size: 13px; 
+            font-weight: 700; cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-toggle-sign.signed { background: #e6fffa; color: #38b2ac; border: 1px solid #b2f5ea; }
+        .btn-toggle-sign.unsigned { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
+        .btn-toggle-sign:active { transform: scale(0.95); }
+
+        /* URL 专属区域 */
         .url-box {
             background: #f8fafc; border: 1px dashed #cbd5e0;
-            border-radius: 12px; padding: 10px 12px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+            border-radius: 12px; padding: 12px;
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
         }
-        .url-label { font-size: 12px; color: var(--text-light); font-weight: bold; flex-shrink: 0; }
-        .url-text { font-size: 13px; color: #4a5568; word-break: break-all; flex-grow: 1; line-height: 1.4; }
-        
-        /* 好吃模型区域 */
-        .model-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .url-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+        .url-label { font-size: 11px; color: var(--text-light); font-weight: 800; margin-bottom: 2px; }
+        .url-text { font-size: 13px; color: #4a5568; word-break: break-all; }
+
+        /* 好吃模型 */
+        .model-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .model-item {
             background: linear-gradient(120deg, #fffcf5 0%, #fff8e6 100%);
-            border: 1px solid #ffe8a1; border-radius: 10px;
-            padding: 8px 12px; font-size: 13px; color: #975a16;
-            display: flex; align-items: center; word-break: break-all;
+            border: 1px solid #ffe8a1;
+            border-radius: 12px; padding: 10px 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            word-break: break-all;
         }
-        .model-item::before { content: '✨'; margin-right: 6px; font-size: 12px; }
+        .model-name { font-size: 13px; color: #975a16; font-weight: 600; display: flex; align-items: center; gap: 5px;}
+        .model-name::before { content: '✨'; }
+        .model-price { font-size: 13px; color: #e53e3e; font-weight: 700; background: white; padding: 2px 8px; border-radius: 6px; border: 1px solid #fed7d7; white-space: nowrap;}
 
-        /* 普通备注区域 */
+        /* 普通备注 */
         .remark-box { background: #f8fafc; border-radius: 12px; padding: 12px; margin-bottom: 15px; }
-        .remark-label { font-size: 12px; color: var(--text-light); font-weight: bold; margin-bottom: 5px; }
+        .remark-label { font-size: 11px; color: var(--text-light); font-weight: 800; margin-bottom: 4px; }
         .remark-text { font-size: 13px; color: #718096; line-height: 1.5; word-break: break-all; }
 
-        .actions { display: flex; justify-content: flex-end; gap: 12px; }
-        .btn-small { 
-            background: none; border: 1.5px solid #e2e8f0; color: #718096; 
-            padding: 8px 16px; border-radius: 12px; font-size: 14px; 
-            font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
+        .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;}
+        .btn-small { background: none; border: 1.5px solid #e2e8f0; color: #718096; padding: 8px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .btn-edit { border-color: var(--blue-text); color: var(--blue-text); }
         .btn-delete { border-color: var(--pink-text); color: var(--pink-text); }
-
-        /* 签到状态标签 - 增加点击交互感 */
-        .sign-status { 
-            display: inline-block; padding: 5px 12px; border-radius: 20px; 
-            font-size: 12px; font-weight: 600; cursor: pointer; 
-            transition: all 0.2s; user-select: none;
-        }
-        .sign-status:active { transform: scale(0.95); }
-        .status-yes { background: #e6fffa; color: #38b2ac; border: 1px solid #b2f5ea; }
-        .status-no { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
 
         /* 弹窗表单 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
@@ -135,15 +149,14 @@
         
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
-        .form-group input, .form-group textarea, .form-group select { 
-            width: 100%; padding: 14px; border: 1.5px solid #edf2f7; border-radius: 12px; 
-            font-size: 15px; outline: none; background: #f8fafc; transition: border 0.2s;
-        }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 14px; border: 1.5px solid #edf2f7; border-radius: 12px; font-size: 15px; outline: none; background: #f8fafc; transition: border 0.2s; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue-text); background: white; }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
-        .dynamic-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .dynamic-row input { flex: 1; }
+        /* 动态表单行 */
+        .dynamic-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .input-model { flex: 2; }
+        .input-price { flex: 1; }
         .btn-remove-model { background: #fff5f5; color: #e53e3e; border: none; padding: 0 15px; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; }
         .btn-add-model { background: #fff8e6; color: #d69e2e; border: 1px dashed #ffe8a1; padding: 10px; border-radius: 12px; font-size: 14px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 20px;}
         
@@ -191,7 +204,7 @@
             </div>
 
             <div id="signDetailGroup" class="form-group">
-                <label>今日是否已签到？</label>
+                <label>今日是否已签到？（添加后在首页可直接点击修改）</label>
                 <select id="isSigned">
                     <option value="否">还没签到</option>
                     <option value="是">已签到 ✅</option>
@@ -213,9 +226,12 @@
                 <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white;">
             </div>
 
+            <!-- 动态好吃模型 + 价格 -->
             <div class="form-group">
                 <label style="color: #d69e2e;">✨ 好吃模型列表</label>
-                <div id="modelContainer"></div>
+                <div id="modelContainer">
+                    <!-- 输入框会动态生成在这里 -->
+                </div>
                 <button type="button" class="btn-add-model" onclick="addModelInput()">+ 添加一个模型</button>
             </div>
             
@@ -232,7 +248,7 @@
     </div>
 
     <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV3')) || []; 
+        let sites = JSON.parse(localStorage.getItem('mySitesV4')) || []; // 升级到 V4
         let isEditing = false;
 
         function toggleSignOptions() {
@@ -241,17 +257,20 @@
             document.getElementById('conditionGroup').classList.toggle('hidden', !isSupport);
         }
 
-        function addModelInput(value = '') {
+        // 动态模型输入（含价格）
+        function addModelInput(name = '', price = '') {
             const container = document.getElementById('modelContainer');
             const div = document.createElement('div');
             div.className = 'dynamic-row';
             div.innerHTML = `
-                <input type="text" class="model-input" value="${value}" placeholder="输入模型名称...">
+                <input type="text" class="input-model model-name-input" value="${name}" placeholder="模型名称">
+                <input type="text" class="input-price model-price-input" value="${price}" placeholder="价格">
                 <button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>
             `;
             container.appendChild(div);
         }
 
+        // 渲染页面
         function renderSites() {
             const list = document.getElementById('siteList');
             list.innerHTML = '';
@@ -264,12 +283,14 @@
             sites.forEach((site, index) => {
                 let signHtml = '';
                 if (site.supportSign === '是') {
-                    const signStatus = site.isSigned === '是' ? '<span class="sign-status status-yes">今日已签到</span>' : '<span class="sign-status status-no">今日未签到</span>';
-                    // 这里给标签加了 onclick 事件，点击直接触发切换函数
+                    // 一键切换签到的按钮
+                    const isSigned = site.isSigned === '是';
+                    const btnClass = isSigned ? 'signed' : 'unsigned';
+                    const btnText = isSigned ? '✅ 今日已签 (点击取消)' : '❌ 今日未签 (点击签到)';
                     signHtml = `
                     <div class="info-row">
                         <span class="info-label">签到状态</span>
-                        <span class="info-value" onclick="toggleSignStatus(${index})">${signStatus}</span>
+                        <button class="btn-toggle-sign ${btnClass}" onclick="toggleSign(${index})">${btnText}</button>
                     </div>
                     ${site.condition ? `
                     <div class="info-row">
@@ -279,74 +300,95 @@
                     `;
                 }
 
+                // 好吃模型渲染
                 let modelHtml = '';
                 if (site.foodModels && site.foodModels.length > 0) {
-                    const models = site.foodModels.filter(m => m.trim() !== '').map(m => `<div class="model-item">${m}</div>`).join('');
-                    if(models) {
-                        modelHtml = `<div class="model-grid">${models}</div>`;
-                    }
+                    const models = site.foodModels.map(m => `
+                        <div class="model-item">
+                            <span class="model-name">${m.name}</span>
+                            ${m.price ? `<span class="model-price">💰 ${m.price}</span>` : ''}
+                        </div>
+                    `).join('');
+                    if(models) modelHtml = `<div class="model-grid">${models}</div>`;
                 }
 
+                // URL 区域
                 let urlHtml = '';
                 if (site.customUrl) {
                     urlHtml = `
                     <div class="url-box">
-                        <div class="url-label">URL</div>
-                        <div class="url-text">${site.customUrl}</div>
+                        <div class="url-info">
+                            <div class="url-label">专属 URL</div>
+                            <div class="url-text">${site.customUrl}</div>
+                        </div>
                         <button class="btn-copy" onclick="copyText('${site.customUrl}', this)">📋 复制</button>
                     </div>`;
                 }
 
                 const remarkHtml = site.remark ? `
                     <div class="remark-box">
-                        <div class="remark-label">备注</div>
+                        <div class="remark-label">额外备注</div>
                         <div class="remark-text">${site.remark}</div>
                     </div>
                 ` : '';
 
                 const card = document.createElement('div');
-                card.className = 'card';
+                // 默认展开，如果之前点了收起，就加上 collapsed 类
+                const isCollapsed = site.isCollapsed ? 'collapsed' : '';
+                card.className = `card ${isCollapsed}`;
+                
                 card.innerHTML = `
-                    <div class="card-header">
-                        <div class="site-name">${site.name}</div>
+                    <div class="card-header" onclick="toggleCollapse(${index})">
+                        <div class="header-left">
+                            <div class="site-name">${site.name}</div>
+                        </div>
+                        <div class="toggle-icon">▼</div>
+                    </div>
+                    
+                    <div class="card-body">
                         <div class="link-row">
                             ${site.url ? `
                             <a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 点击访问</a>
-                            <button class="btn-copy" onclick="copyText('${site.url}', this)">📋 复制</button>
+                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.url}', this)">📋 复制链接</button>
                             ` : ''}
                         </div>
-                    </div>
-                    
-                    ${signHtml}
-                    
-                    <div class="info-row">
-                        <span class="info-label">当前余额</span>
-                        <span class="info-value balance">${site.balance || '0'}</span>
-                    </div>
+                        
+                        ${signHtml}
+                        
+                        <div class="info-row">
+                            <span class="info-label">当前余额</span>
+                            <span class="info-value balance">${site.balance || '0'}</span>
+                        </div>
 
-                    ${urlHtml}
-                    ${modelHtml}
-                    ${remarkHtml}
-                    
-                    <div class="actions">
-                        <button class="btn-small btn-edit" onclick="editSite(${index})">编辑</button>
-                        <button class="btn-small btn-delete" onclick="deleteSite(${index})">删除</button>
+                        ${urlHtml}
+                        ${modelHtml}
+                        ${remarkHtml}
+                        
+                        <div class="actions">
+                            <button class="btn-small btn-edit" onclick="event.stopPropagation(); editSite(${index})">编辑</button>
+                            <button class="btn-small btn-delete" onclick="event.stopPropagation(); deleteSite(${index})">删除</button>
+                        </div>
                     </div>
                 `;
                 list.appendChild(card);
             });
         }
 
-        // --- 新增：直接点击标签切换签到状态 ---
-        function toggleSignStatus(index) {
-            // 切换状态
+        // 一键切换签到状态
+        function toggleSign(index) {
             sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
-            // 保存到本地
-            localStorage.setItem('mySitesV3', JSON.stringify(sites));
-            // 重新渲染页面（刷新视觉）
+            localStorage.setItem('mySitesV4', JSON.stringify(sites));
+            renderSites(); // 重新渲染
+        }
+
+        // 折叠/展开卡片
+        function toggleCollapse(index) {
+            sites[index].isCollapsed = !sites[index].isCollapsed;
+            localStorage.setItem('mySitesV4', JSON.stringify(sites));
             renderSites();
         }
 
+        // 复制功能优化
         function copyText(text, btnElement) {
             let copyStr = text;
             if (!text.startsWith('http') && text.includes('.')) {
@@ -354,14 +396,14 @@
             }
 
             navigator.clipboard.writeText(copyStr).then(() => {
-                // 复制成功后的视觉反馈
-                const originalHtml = btnElement.innerHTML;
+                const originalHTML = btnElement.innerHTML;
                 btnElement.innerHTML = '✅ 已复制';
-                btnElement.classList.add('copied');
-                
+                btnElement.style.color = '#38b2ac';
+                btnElement.style.background = '#e6fffa';
                 setTimeout(() => {
-                    btnElement.innerHTML = originalHtml;
-                    btnElement.classList.remove('copied');
+                    btnElement.innerHTML = originalHTML;
+                    btnElement.style.color = '';
+                    btnElement.style.background = '';
                 }, 1500);
             }).catch(err => {
                 alert('复制失败，请手动长按复制');
@@ -382,7 +424,7 @@
             document.getElementById('remark').value = '';
             
             document.getElementById('modelContainer').innerHTML = '';
-            addModelInput(); 
+            addModelInput(); // 默认给一个空模型框
 
             toggleSignOptions(); 
             document.getElementById('formModal').style.display = 'flex';
@@ -399,8 +441,18 @@
                 return;
             }
 
-            const modelInputs = document.querySelectorAll('.model-input');
-            const foodModels = Array.from(modelInputs).map(input => input.value.trim()).filter(val => val !== '');
+            // 获取模型和价格
+            const modelNames = document.querySelectorAll('.model-name-input');
+            const modelPrices = document.querySelectorAll('.model-price-input');
+            
+            let foodModels = [];
+            for (let i = 0; i < modelNames.length; i++) {
+                const mName = modelNames[i].value.trim();
+                const mPrice = modelPrices[i].value.trim();
+                if (mName || mPrice) { // 只要有一个填了就算
+                    foodModels.push({ name: mName || '未命名', price: mPrice });
+                }
+            }
 
             const siteData = {
                 name: name,
@@ -410,8 +462,9 @@
                 condition: document.getElementById('signCondition').value.trim(),
                 balance: document.getElementById('balance').value.trim(),
                 customUrl: document.getElementById('customUrl').value.trim(),
-                foodModels: foodModels, 
-                remark: document.getElementById('remark').value.trim()
+                foodModels: foodModels,
+                remark: document.getElementById('remark').value.trim(),
+                isCollapsed: isEditing ? sites[document.getElementById('editId').value].isCollapsed : false // 保持折叠状态
             };
 
             if (isEditing) {
@@ -420,7 +473,7 @@
                 sites.push(siteData);
             }
 
-            localStorage.setItem('mySitesV3', JSON.stringify(sites));
+            localStorage.setItem('mySitesV4', JSON.stringify(sites));
             closeModal();
             renderSites();
         }
@@ -440,11 +493,12 @@
             document.getElementById('customUrl').value = site.customUrl || '';
             document.getElementById('remark').value = site.remark || '';
             
+            // 回显模型
             document.getElementById('modelContainer').innerHTML = '';
             if (site.foodModels && site.foodModels.length > 0) {
-                site.foodModels.forEach(model => addModelInput(model));
+                site.foodModels.forEach(m => addModelInput(m.name, m.price));
             } else {
-                addModelInput(); 
+                addModelInput();
             }
             
             toggleSignOptions();
@@ -454,7 +508,7 @@
         function deleteSite(index) {
             if (confirm('确定要删除这个站点吗？')) {
                 sites.splice(index, 1);
-                localStorage.setItem('mySitesV3', JSON.stringify(sites));
+                localStorage.setItem('mySitesV4', JSON.stringify(sites));
                 renderSites();
             }
         }
