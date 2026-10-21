@@ -63,8 +63,14 @@
         }
         .header-left { display: flex; flex-direction: column; gap: 8px; }
         .site-name { font-size: 20px; font-weight: 700; color: #2d3748; }
-        .toggle-icon { color: var(--text-light); font-size: 20px; transition: transform 0.3s; }
-        .card.collapsed .toggle-icon { transform: rotate(-90deg); }
+        
+        /* 苹果折叠图标 */
+        .toggle-icon { 
+            font-size: 22px; 
+            transition: transform 0.3s ease; 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        .card.collapsed .toggle-icon { transform: scale(0.9); }
         
         /* 内容区（可折叠） */
         .card-body {
@@ -83,12 +89,12 @@
             border-radius: 8px; font-weight: 600;
         }
         
-        /* 复制按钮（已优化：不换行，加宽） */
+        /* 复制按钮 */
         .btn-copy { 
             background: #f1f5f9; border: 1px solid #e2e8f0; color: #64748b; 
             padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
             cursor: pointer; transition: all 0.2s;
-            white-space: nowrap; /* 绝对不换行 */
+            white-space: nowrap;
             display: flex; align-items: center; justify-content: center; gap: 4px;
             flex-shrink: 0;
         }
@@ -99,15 +105,32 @@
         .info-value { font-weight: 600; color: #4a5568; }
         .balance { color: #ed8936; font-weight: 800; font-size: 18px; }
 
-        /* 一键切换签到按钮 */
-        .btn-toggle-sign {
-            border: none; padding: 6px 14px; border-radius: 20px; font-size: 13px; 
-            font-weight: 700; cursor: pointer; transition: all 0.3s;
-            display: flex; align-items: center; gap: 5px;
+        /* ======= 滑动开关签到 ======= */
+        .switch-container {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
         }
-        .btn-toggle-sign.signed { background: #e6fffa; color: #38b2ac; border: 1px solid #b2f5ea; }
-        .btn-toggle-sign.unsigned { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
-        .btn-toggle-sign:active { transform: scale(0.95); }
+        .switch-text {
+            font-size: 13px; font-weight: 700; transition: color 0.3s;
+        }
+        .switch-text.unsigned { color: #e53e3e; }
+        .switch-text.signed { color: #38b2ac; }
+
+        .toggle-switch {
+            position: relative; width: 50px; height: 28px;
+            background-color: #cbd5e0; /* 默认灰色 */
+            border-radius: 30px; transition: background-color 0.3s;
+            flex-shrink: 0;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 22px; height: 22px; background-color: white;
+            border-radius: 50%; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        /* 激活状态 */
+        .toggle-switch.active { background-color: #48bb78; }
+        .toggle-switch.active::after { transform: translateX(22px); }
+        /* ============================= */
 
         /* URL 专属区域 */
         .url-box {
@@ -204,7 +227,7 @@
             </div>
 
             <div id="signDetailGroup" class="form-group">
-                <label>今日是否已签到？（添加后在首页可直接点击修改）</label>
+                <label>今日是否已签到？（添加后可在首页滑动修改）</label>
                 <select id="isSigned">
                     <option value="否">还没签到</option>
                     <option value="是">已签到 ✅</option>
@@ -229,9 +252,7 @@
             <!-- 动态好吃模型 + 价格 -->
             <div class="form-group">
                 <label style="color: #d69e2e;">✨ 好吃模型列表</label>
-                <div id="modelContainer">
-                    <!-- 输入框会动态生成在这里 -->
-                </div>
+                <div id="modelContainer"></div>
                 <button type="button" class="btn-add-model" onclick="addModelInput()">+ 添加一个模型</button>
             </div>
             
@@ -248,7 +269,7 @@
     </div>
 
     <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV4')) || []; // 升级到 V4
+        let sites = JSON.parse(localStorage.getItem('mySitesV5')) || []; // 升级 V5
         let isEditing = false;
 
         function toggleSignOptions() {
@@ -257,7 +278,6 @@
             document.getElementById('conditionGroup').classList.toggle('hidden', !isSupport);
         }
 
-        // 动态模型输入（含价格）
         function addModelInput(name = '', price = '') {
             const container = document.getElementById('modelContainer');
             const div = document.createElement('div');
@@ -270,7 +290,6 @@
             container.appendChild(div);
         }
 
-        // 渲染页面
         function renderSites() {
             const list = document.getElementById('siteList');
             list.innerHTML = '';
@@ -283,14 +302,19 @@
             sites.forEach((site, index) => {
                 let signHtml = '';
                 if (site.supportSign === '是') {
-                    // 一键切换签到的按钮
                     const isSigned = site.isSigned === '是';
-                    const btnClass = isSigned ? 'signed' : 'unsigned';
-                    const btnText = isSigned ? '✅ 今日已签 (点击取消)' : '❌ 今日未签 (点击签到)';
+                    const textClass = isSigned ? 'signed' : 'unsigned';
+                    const textStr = isSigned ? '已签到' : '未签到';
+                    const switchActive = isSigned ? 'active' : '';
+                    
+                    // 注意：这里的 onclick 绑定了 toggleSign，并且阻止了冒泡（不触发折叠）
                     signHtml = `
                     <div class="info-row">
-                        <span class="info-label">签到状态</span>
-                        <button class="btn-toggle-sign ${btnClass}" onclick="toggleSign(${index})">${btnText}</button>
+                        <span class="info-label">今日签到</span>
+                        <div class="switch-container" onclick="event.stopPropagation(); toggleSign(${index})">
+                            <span class="switch-text ${textClass}">${textStr}</span>
+                            <div class="toggle-switch ${switchActive}"></div>
+                        </div>
                     </div>
                     ${site.condition ? `
                     <div class="info-row">
@@ -300,7 +324,6 @@
                     `;
                 }
 
-                // 好吃模型渲染
                 let modelHtml = '';
                 if (site.foodModels && site.foodModels.length > 0) {
                     const models = site.foodModels.map(m => `
@@ -312,7 +335,6 @@
                     if(models) modelHtml = `<div class="model-grid">${models}</div>`;
                 }
 
-                // URL 区域
                 let urlHtml = '';
                 if (site.customUrl) {
                     urlHtml = `
@@ -321,7 +343,7 @@
                             <div class="url-label">专属 URL</div>
                             <div class="url-text">${site.customUrl}</div>
                         </div>
-                        <button class="btn-copy" onclick="copyText('${site.customUrl}', this)">📋 复制</button>
+                        <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.customUrl}', this)">📋 复制</button>
                     </div>`;
                 }
 
@@ -333,16 +355,18 @@
                 ` : '';
 
                 const card = document.createElement('div');
-                // 默认展开，如果之前点了收起，就加上 collapsed 类
                 const isCollapsed = site.isCollapsed ? 'collapsed' : '';
                 card.className = `card ${isCollapsed}`;
+                
+                // 根据折叠状态显示不同苹果
+                const appleIcon = isCollapsed ? '🍎' : '🍏';
                 
                 card.innerHTML = `
                     <div class="card-header" onclick="toggleCollapse(${index})">
                         <div class="header-left">
                             <div class="site-name">${site.name}</div>
                         </div>
-                        <div class="toggle-icon">▼</div>
+                        <div class="toggle-icon">${appleIcon}</div>
                     </div>
                     
                     <div class="card-body">
@@ -374,21 +398,20 @@
             });
         }
 
-        // 一键切换签到状态
+        // 一键滑动切换签到
         function toggleSign(index) {
             sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
-            localStorage.setItem('mySitesV4', JSON.stringify(sites));
-            renderSites(); // 重新渲染
+            localStorage.setItem('mySitesV5', JSON.stringify(sites));
+            renderSites(); 
         }
 
         // 折叠/展开卡片
         function toggleCollapse(index) {
             sites[index].isCollapsed = !sites[index].isCollapsed;
-            localStorage.setItem('mySitesV4', JSON.stringify(sites));
+            localStorage.setItem('mySitesV5', JSON.stringify(sites));
             renderSites();
         }
 
-        // 复制功能优化
         function copyText(text, btnElement) {
             let copyStr = text;
             if (!text.startsWith('http') && text.includes('.')) {
@@ -424,7 +447,7 @@
             document.getElementById('remark').value = '';
             
             document.getElementById('modelContainer').innerHTML = '';
-            addModelInput(); // 默认给一个空模型框
+            addModelInput();
 
             toggleSignOptions(); 
             document.getElementById('formModal').style.display = 'flex';
@@ -441,7 +464,6 @@
                 return;
             }
 
-            // 获取模型和价格
             const modelNames = document.querySelectorAll('.model-name-input');
             const modelPrices = document.querySelectorAll('.model-price-input');
             
@@ -449,7 +471,7 @@
             for (let i = 0; i < modelNames.length; i++) {
                 const mName = modelNames[i].value.trim();
                 const mPrice = modelPrices[i].value.trim();
-                if (mName || mPrice) { // 只要有一个填了就算
+                if (mName || mPrice) {
                     foodModels.push({ name: mName || '未命名', price: mPrice });
                 }
             }
@@ -464,7 +486,7 @@
                 customUrl: document.getElementById('customUrl').value.trim(),
                 foodModels: foodModels,
                 remark: document.getElementById('remark').value.trim(),
-                isCollapsed: isEditing ? sites[document.getElementById('editId').value].isCollapsed : false // 保持折叠状态
+                isCollapsed: isEditing ? sites[document.getElementById('editId').value].isCollapsed : false 
             };
 
             if (isEditing) {
@@ -473,7 +495,7 @@
                 sites.push(siteData);
             }
 
-            localStorage.setItem('mySitesV4', JSON.stringify(sites));
+            localStorage.setItem('mySitesV5', JSON.stringify(sites));
             closeModal();
             renderSites();
         }
@@ -493,7 +515,6 @@
             document.getElementById('customUrl').value = site.customUrl || '';
             document.getElementById('remark').value = site.remark || '';
             
-            // 回显模型
             document.getElementById('modelContainer').innerHTML = '';
             if (site.foodModels && site.foodModels.length > 0) {
                 site.foodModels.forEach(m => addModelInput(m.name, m.price));
@@ -508,7 +529,7 @@
         function deleteSite(index) {
             if (confirm('确定要删除这个站点吗？')) {
                 sites.splice(index, 1);
-                localStorage.setItem('mySitesV4', JSON.stringify(sites));
+                localStorage.setItem('mySitesV5', JSON.stringify(sites));
                 renderSites();
             }
         }
