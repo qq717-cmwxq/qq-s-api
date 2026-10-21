@@ -67,12 +67,18 @@
             border-radius: 8px; display: inline-block; 
             word-break: break-all; font-weight: 500;
         }
+        
+        /* 美化后的复制按钮，强制不换行 */
         .btn-copy { 
-            background: #edf2f7; border: none; color: #718096; 
-            padding: 6px 10px; border-radius: 8px; font-size: 12px; 
-            cursor: pointer; transition: all 0.2s;
+            background: #e2e8f0; border: none; color: #4a5568; 
+            padding: 6px 12px; border-radius: 20px; font-size: 12px; 
+            cursor: pointer; transition: all 0.2s; font-weight: 600;
+            white-space: nowrap; /* 核心：防止文字折行 */
+            flex-shrink: 0; /* 防止按钮被挤压 */
+            display: inline-flex; align-items: center; justify-content: center;
         }
-        .btn-copy:active { background: #e2e8f0; }
+        .btn-copy:active { background: #cbd5e0; transform: scale(0.95); }
+        .btn-copy.copied { background: #c6f6d5; color: #2f855a; }
         
         .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 12px; }
         .info-label { color: var(--text-light); font-weight: 500; }
@@ -83,31 +89,23 @@
         .url-box {
             background: #f8fafc; border: 1px dashed #cbd5e0;
             border-radius: 12px; padding: 10px 12px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 8px;
         }
-        .url-label { font-size: 12px; color: var(--text-light); font-weight: bold; flex-shrink: 0; margin-right: 10px; }
-        .url-text { font-size: 13px; color: #4a5568; word-break: break-all; flex-grow: 1; margin-right: 10px; }
+        .url-label { font-size: 12px; color: var(--text-light); font-weight: bold; flex-shrink: 0; }
+        .url-text { font-size: 13px; color: #4a5568; word-break: break-all; flex-grow: 1; line-height: 1.4; }
         
-        /* 好吃模型区域 - 采用灵活的网格排版 */
-        .model-grid {
-            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;
-        }
+        /* 好吃模型区域 */
+        .model-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .model-item {
             background: linear-gradient(120deg, #fffcf5 0%, #fff8e6 100%);
-            border: 1px solid #ffe8a1;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 13px; color: #975a16;
-            display: flex; align-items: center;
-            word-break: break-all;
+            border: 1px solid #ffe8a1; border-radius: 10px;
+            padding: 8px 12px; font-size: 13px; color: #975a16;
+            display: flex; align-items: center; word-break: break-all;
         }
         .model-item::before { content: '✨'; margin-right: 6px; font-size: 12px; }
 
         /* 普通备注区域 */
-        .remark-box {
-            background: #f8fafc; border-radius: 12px;
-            padding: 12px; margin-bottom: 15px;
-        }
+        .remark-box { background: #f8fafc; border-radius: 12px; padding: 12px; margin-bottom: 15px; }
         .remark-label { font-size: 12px; color: var(--text-light); font-weight: bold; margin-bottom: 5px; }
         .remark-text { font-size: 13px; color: #718096; line-height: 1.5; word-break: break-all; }
 
@@ -120,9 +118,15 @@
         .btn-edit { border-color: var(--blue-text); color: var(--blue-text); }
         .btn-delete { border-color: var(--pink-text); color: var(--pink-text); }
 
-        .sign-status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-yes { background: #e6fffa; color: #38b2ac; }
-        .status-no { background: #fff5f5; color: #e53e3e; }
+        /* 签到状态标签 - 增加点击交互感 */
+        .sign-status { 
+            display: inline-block; padding: 5px 12px; border-radius: 20px; 
+            font-size: 12px; font-weight: 600; cursor: pointer; 
+            transition: all 0.2s; user-select: none;
+        }
+        .sign-status:active { transform: scale(0.95); }
+        .status-yes { background: #e6fffa; color: #38b2ac; border: 1px solid #b2f5ea; }
+        .status-no { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
 
         /* 弹窗表单 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
@@ -138,7 +142,6 @@
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue-text); background: white; }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
-        /* 动态表单行 */
         .dynamic-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .dynamic-row input { flex: 1; }
         .btn-remove-model { background: #fff5f5; color: #e53e3e; border: none; padding: 0 15px; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; }
@@ -205,18 +208,14 @@
                 <input type="text" id="balance" placeholder="例如：25.5">
             </div>
 
-            <!-- 新增：专属 URL 设置 -->
             <div class="form-group" style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #cbd5e0;">
                 <label>专属 URL（提取用）</label>
                 <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white;">
             </div>
 
-            <!-- 动态好吃模型 -->
             <div class="form-group">
                 <label style="color: #d69e2e;">✨ 好吃模型列表</label>
-                <div id="modelContainer">
-                    <!-- 输入框会动态生成在这里 -->
-                </div>
+                <div id="modelContainer"></div>
                 <button type="button" class="btn-add-model" onclick="addModelInput()">+ 添加一个模型</button>
             </div>
             
@@ -233,7 +232,7 @@
     </div>
 
     <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV3')) || []; // 升级到V3版本存储
+        let sites = JSON.parse(localStorage.getItem('mySitesV3')) || []; 
         let isEditing = false;
 
         function toggleSignOptions() {
@@ -242,7 +241,6 @@
             document.getElementById('conditionGroup').classList.toggle('hidden', !isSupport);
         }
 
-        // --- 动态模型输入框逻辑 ---
         function addModelInput(value = '') {
             const container = document.getElementById('modelContainer');
             const div = document.createElement('div');
@@ -254,7 +252,6 @@
             container.appendChild(div);
         }
 
-        // 渲染页面
         function renderSites() {
             const list = document.getElementById('siteList');
             list.innerHTML = '';
@@ -268,10 +265,11 @@
                 let signHtml = '';
                 if (site.supportSign === '是') {
                     const signStatus = site.isSigned === '是' ? '<span class="sign-status status-yes">今日已签到</span>' : '<span class="sign-status status-no">今日未签到</span>';
+                    // 这里给标签加了 onclick 事件，点击直接触发切换函数
                     signHtml = `
                     <div class="info-row">
                         <span class="info-label">签到状态</span>
-                        <span class="info-value">${signStatus}</span>
+                        <span class="info-value" onclick="toggleSignStatus(${index})">${signStatus}</span>
                     </div>
                     ${site.condition ? `
                     <div class="info-row">
@@ -281,7 +279,6 @@
                     `;
                 }
 
-                // 好吃模型：多卡片渲染
                 let modelHtml = '';
                 if (site.foodModels && site.foodModels.length > 0) {
                     const models = site.foodModels.filter(m => m.trim() !== '').map(m => `<div class="model-item">${m}</div>`).join('');
@@ -290,7 +287,6 @@
                     }
                 }
 
-                // URL 区域渲染
                 let urlHtml = '';
                 if (site.customUrl) {
                     urlHtml = `
@@ -316,7 +312,7 @@
                         <div class="link-row">
                             ${site.url ? `
                             <a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 点击访问</a>
-                            <button class="btn-copy" onclick="copyText('${site.url}', this)">📋 复制链接</button>
+                            <button class="btn-copy" onclick="copyText('${site.url}', this)">📋 复制</button>
                             ` : ''}
                         </div>
                     </div>
@@ -341,28 +337,37 @@
             });
         }
 
-        // 复制功能
+        // --- 新增：直接点击标签切换签到状态 ---
+        function toggleSignStatus(index) {
+            // 切换状态
+            sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
+            // 保存到本地
+            localStorage.setItem('mySitesV3', JSON.stringify(sites));
+            // 重新渲染页面（刷新视觉）
+            renderSites();
+        }
+
         function copyText(text, btnElement) {
-            // 如果是纯文本而非完整链接，自动补全https
             let copyStr = text;
             if (!text.startsWith('http') && text.includes('.')) {
                 copyStr = 'https://' + text;
             }
 
             navigator.clipboard.writeText(copyStr).then(() => {
-                const originalText = btnElement.innerText;
-                btnElement.innerText = '✅ 已复制';
-                btnElement.style.color = '#38b2ac';
+                // 复制成功后的视觉反馈
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '✅ 已复制';
+                btnElement.classList.add('copied');
+                
                 setTimeout(() => {
-                    btnElement.innerText = originalText;
-                    btnElement.style.color = '';
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.classList.remove('copied');
                 }, 1500);
             }).catch(err => {
                 alert('复制失败，请手动长按复制');
             });
         }
 
-        // 打开弹窗
         function openModal() {
             isEditing = false;
             document.getElementById('modalTitle').innerText = '添加新站点';
@@ -377,7 +382,7 @@
             document.getElementById('remark').value = '';
             
             document.getElementById('modelContainer').innerHTML = '';
-            addModelInput(); // 默认给一个空模型框
+            addModelInput(); 
 
             toggleSignOptions(); 
             document.getElementById('formModal').style.display = 'flex';
@@ -387,7 +392,6 @@
             document.getElementById('formModal').style.display = 'none';
         }
 
-        // 保存站点
         function saveSite() {
             const name = document.getElementById('siteName').value.trim();
             if (!name) {
@@ -395,7 +399,6 @@
                 return;
             }
 
-            // 获取所有好吃模型的输入值
             const modelInputs = document.querySelectorAll('.model-input');
             const foodModels = Array.from(modelInputs).map(input => input.value.trim()).filter(val => val !== '');
 
@@ -407,7 +410,7 @@
                 condition: document.getElementById('signCondition').value.trim(),
                 balance: document.getElementById('balance').value.trim(),
                 customUrl: document.getElementById('customUrl').value.trim(),
-                foodModels: foodModels, // 现在是一个数组
+                foodModels: foodModels, 
                 remark: document.getElementById('remark').value.trim()
             };
 
@@ -422,7 +425,6 @@
             renderSites();
         }
 
-        // 编辑站点
         function editSite(index) {
             isEditing = true;
             const site = sites[index];
@@ -438,12 +440,11 @@
             document.getElementById('customUrl').value = site.customUrl || '';
             document.getElementById('remark').value = site.remark || '';
             
-            // 回显好吃模型
             document.getElementById('modelContainer').innerHTML = '';
             if (site.foodModels && site.foodModels.length > 0) {
                 site.foodModels.forEach(model => addModelInput(model));
             } else {
-                addModelInput(); // 兼容旧数据
+                addModelInput(); 
             }
             
             toggleSignOptions();
