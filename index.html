@@ -142,7 +142,21 @@
         .url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
         .url-text { font-size: 12px; color: #555; word-break: break-all; font-family: monospace;}
 
-        /* 新增：QQ群专属区域 */
+        /* 新增：账号密码专属区域（紫色系区分） */
+        .auth-box { 
+            background: #f9f0ff; border: 1px dashed #d3adf7; 
+            border-radius: 12px; padding: 10px; margin-bottom: 10px; 
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .auth-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .auth-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+        .auth-label { font-size: 11px; color: #722ed1; font-weight: bold; margin-bottom: 2px; }
+        .auth-text { font-size: 13px; color: #391085; word-break: break-all; font-family: monospace; font-weight: bold;}
+        .btn-eye {
+            background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0 5px;
+        }
+
+        /* QQ群专属区域 */
         .qq-box { 
             background: var(--qq-blue-light); border: 1px dashed #91d5ff; 
             border-radius: 12px; padding: 10px; margin-bottom: 12px; 
@@ -210,7 +224,7 @@
     <!-- 工具栏 -->
     <div class="toolbar">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="搜站点/模型/备注/QQ群..." oninput="renderSites()">
+            <input type="text" id="searchInput" placeholder="搜站点/账号/模型/备注..." oninput="renderSites()">
         </div>
         <button class="btn-filter" id="filterBtnUnsign" onclick="toggleFilter('unsign')">🍏 仅看未签</button>
         <button class="btn-filter" id="filterBtnRecharge" onclick="toggleFilter('recharge')">💰 仅看充值</button>
@@ -259,7 +273,14 @@
                 <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white;">
             </div>
 
-            <!-- 新增：QQ群号输入 -->
+            <!-- 新增：账号密码记录 -->
+            <div class="form-group" style="background: #f9f0ff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d3adf7;">
+                <label style="color: #722ed1;">🔐 专属账号</label>
+                <input type="text" id="accountUser" placeholder="登录用户名/账号" style="background: white; margin-bottom: 8px; border-color: transparent;">
+                <input type="text" id="accountPass" placeholder="登录密码" style="background: white; border-color: transparent;">
+            </div>
+
+            <!-- QQ群号 -->
             <div class="form-group" style="background: var(--qq-blue-light); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #91d5ff;">
                 <label style="color: var(--qq-blue);">🐧 专属 QQ 群号</label>
                 <input type="number" id="qqGroup" placeholder="填写QQ群号，例如：12345678" style="background: white; border-color: transparent;">
@@ -281,7 +302,7 @@
     </div>
 
     <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV8')) || []; // 升级到 V8
+        let sites = JSON.parse(localStorage.getItem('mySitesV9')) || []; // 升级到 V9
         let isEditing = false;
         
         let currentFilter = 'none'; 
@@ -302,32 +323,21 @@
         }
 
         function toggleFilter(type) {
-            if (currentFilter === type) {
-                currentFilter = 'none';
-            } else {
-                currentFilter = type;
-            }
-
-            const btnUnsign = document.getElementById('filterBtnUnsign');
-            const btnRecharge = document.getElementById('filterBtnRecharge');
-            
-            btnUnsign.className = currentFilter === 'unsign' ? 'btn-filter active-green' : 'btn-filter';
-            btnRecharge.className = currentFilter === 'recharge' ? 'btn-filter active-yellow' : 'btn-filter';
-            
+            currentFilter = (currentFilter === type) ? 'none' : type;
+            document.getElementById('filterBtnUnsign').className = currentFilter === 'unsign' ? 'btn-filter active-green' : 'btn-filter';
+            document.getElementById('filterBtnRecharge').className = currentFilter === 'recharge' ? 'btn-filter active-yellow' : 'btn-filter';
             renderSites();
         }
 
         function resetSigns() {
             if(confirm('确定要把所有站点的签到状态重置为“未签到”吗？')){
                 sites.forEach(s => { if(s.supportSign === '是') s.isSigned = '否'; });
-                saveData();
-                renderSites();
+                saveData(); renderSites();
             }
         }
 
         function toggleRechargeOptions() {
-            const has = document.getElementById('hasRecharge').value === '是';
-            document.getElementById('rechargeDetail').classList.toggle('hidden', !has);
+            document.getElementById('rechargeDetail').classList.toggle('hidden', document.getElementById('hasRecharge').value !== '是');
         }
         function toggleSignOptions() {
             const isSupport = document.getElementById('supportSign').value === '是';
@@ -347,6 +357,21 @@
             container.appendChild(div);
         }
 
+        // 切换密码显示隐藏
+        function togglePassword(index) {
+            const passEl = document.getElementById(`pass-${index}`);
+            const eyeBtn = document.getElementById(`eye-${index}`);
+            const realPass = sites[index].accountPass;
+            
+            if (passEl.innerText === '••••••') {
+                passEl.innerText = realPass;
+                eyeBtn.innerText = '🙈'; // 闭眼
+            } else {
+                passEl.innerText = '••••••';
+                eyeBtn.innerText = '👁️'; // 睁眼
+            }
+        }
+
         function renderSites() {
             const list = document.getElementById('siteList');
             list.innerHTML = '';
@@ -354,23 +379,14 @@
             searchKeyword = document.getElementById('searchInput').value.toLowerCase();
 
             sites.forEach((site, index) => {
-                // 1. 筛选逻辑
-                if (currentFilter === 'unsign') {
-                    if (!(site.supportSign === '是' && site.isSigned === '否')) return;
-                } else if (currentFilter === 'recharge') {
-                    if (!(site.hasRecharge === '是' && site.rechargeAmount)) return;
-                }
+                if (currentFilter === 'unsign' && !(site.supportSign === '是' && site.isSigned === '否')) return;
+                if (currentFilter === 'recharge' && !(site.hasRecharge === '是' && site.rechargeAmount)) return;
 
-                // 2. 搜索逻辑 (加入了QQ群号)
-                let searchContent = site.name + (site.remark||'') + (site.customUrl||'') + (site.qqGroup||'');
-                if(site.foodModels) {
-                    site.foodModels.forEach(m => { searchContent += (m.name + m.price); });
-                }
-                if (searchKeyword && !searchContent.toLowerCase().includes(searchKeyword)) {
-                    return;
-                }
+                // 搜索逻辑（包含账号、密码、群号等）
+                let searchContent = site.name + (site.remark||'') + (site.customUrl||'') + (site.qqGroup||'') + (site.accountUser||'');
+                if(site.foodModels) site.foodModels.forEach(m => { searchContent += (m.name + m.price); });
+                if (searchKeyword && !searchContent.toLowerCase().includes(searchKeyword)) return;
 
-                // 渲染逻辑
                 let signHtml = '';
                 if (site.supportSign === '是') {
                     const isSigned = site.isSigned === '是';
@@ -403,7 +419,25 @@
                         <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.customUrl}', this)">📋 复制</button>
                     </div>` : '';
 
-                // 新增：QQ群号 HTML 渲染
+                // 账号密码渲染
+                let authHtml = (site.accountUser || site.accountPass) ? `
+                    <div class="auth-box">
+                        ${site.accountUser ? `
+                        <div class="auth-row">
+                            <div class="auth-info"><div class="auth-label">🔑 账号</div><div class="auth-text">${site.accountUser}</div></div>
+                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.accountUser}', this)">📋 复制</button>
+                        </div>` : ''}
+                        ${site.accountPass ? `
+                        <div class="auth-row">
+                            <div class="auth-info">
+                                <div class="auth-label">🔒 密码</div>
+                                <div class="auth-text" id="pass-${index}">••••••</div>
+                            </div>
+                            <button class="btn-eye" id="eye-${index}" onclick="event.stopPropagation(); togglePassword(${index})">👁️</button>
+                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.accountPass}', this)">📋 复制</button>
+                        </div>` : ''}
+                    </div>` : '';
+
                 let qqHtml = site.qqGroup ? `
                     <div class="qq-box">
                         <div class="qq-info">
@@ -419,9 +453,7 @@
                         <span>金额: ${site.rechargeAmount}</span>
                     </div>` : '';
 
-                const remarkHtml = site.remark ? `
-                    <div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>
-                ` : '';
+                const remarkHtml = site.remark ? `<div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>` : '';
 
                 const card = document.createElement('div');
                 const isCollapsed = site.isCollapsed ? 'collapsed' : '';
@@ -450,6 +482,7 @@
                         <div class="info-row"><span class="info-label">当前余额</span><span class="balance">${site.balance || '0'}</span></div>
                         ${rechargeHtml}
                         ${urlHtml}
+                        ${authHtml}
                         ${qqHtml}
                         ${modelHtml}
                         ${remarkHtml}
@@ -475,12 +508,7 @@
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', draggedIndex);
         }
-
-        function handleDragOver(e) {
-            e.preventDefault(); 
-            e.dataTransfer.dropEffect = 'move';
-        }
-
+        function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
         function handleDrop(e) {
             e.preventDefault();
             const targetCard = e.target.closest('.card');
@@ -490,8 +518,7 @@
                     const draggedItem = sites[draggedIndex];
                     sites.splice(draggedIndex, 1);
                     sites.splice(targetIndex, 0, draggedItem);
-                    saveData();
-                    renderSites();
+                    saveData(); renderSites();
                 }
             }
             document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging'));
@@ -502,14 +529,12 @@
             sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
             saveData(); renderSites(); 
         }
-
         function toggleCollapse(index) {
             sites[index].isCollapsed = !sites[index].isCollapsed;
             saveData(); renderSites();
         }
 
         function copyText(text, btnElement) {
-            // QQ群号是纯数字，不需要加 https
             let copyStr = text.startsWith('http') || !text.includes('.') ? text : 'https://' + text;
             navigator.clipboard.writeText(copyStr).then(() => {
                 const originalHTML = btnElement.innerHTML;
@@ -518,14 +543,11 @@
             }).catch(() => alert('复制失败，请长按复制'));
         }
 
-        function saveData() {
-            localStorage.setItem('mySitesV8', JSON.stringify(sites));
-        }
+        function saveData() { localStorage.setItem('mySitesV9', JSON.stringify(sites)); }
 
         function openModal() {
             isEditing = false;
             document.getElementById('modalTitle').innerText = '添加新站点';
-            document.getElementById('editId').value = '';
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
             document.getElementById('supportSign').value = '是';
@@ -533,7 +555,9 @@
             document.getElementById('signCondition').value = '';
             document.getElementById('balance').value = '';
             document.getElementById('customUrl').value = '';
-            document.getElementById('qqGroup').value = ''; // 重置QQ群
+            document.getElementById('accountUser').value = '';
+            document.getElementById('accountPass').value = '';
+            document.getElementById('qqGroup').value = '';
             document.getElementById('remark').value = '';
             
             document.getElementById('hasRecharge').value = '否';
@@ -573,7 +597,9 @@
                 rechargeDate: document.getElementById('rechargeDate').value,
                 rechargeAmount: document.getElementById('rechargeAmount').value.trim(),
                 customUrl: document.getElementById('customUrl').value.trim(),
-                qqGroup: document.getElementById('qqGroup').value.trim(), // 保存QQ群
+                accountUser: document.getElementById('accountUser').value.trim(),
+                accountPass: document.getElementById('accountPass').value.trim(),
+                qqGroup: document.getElementById('qqGroup').value.trim(),
                 foodModels: foodModels,
                 remark: document.getElementById('remark').value.trim(),
                 isCollapsed: isEditing ? sites[document.getElementById('editId').value].isCollapsed : false 
@@ -598,7 +624,9 @@
             document.getElementById('signCondition').value = site.condition || '';
             document.getElementById('balance').value = site.balance || '';
             document.getElementById('customUrl').value = site.customUrl || '';
-            document.getElementById('qqGroup').value = site.qqGroup || ''; // 回显QQ群
+            document.getElementById('accountUser').value = site.accountUser || '';
+            document.getElementById('accountPass').value = site.accountPass || '';
+            document.getElementById('qqGroup').value = site.qqGroup || '';
             document.getElementById('remark').value = site.remark || '';
             
             document.getElementById('hasRecharge').value = site.hasRecharge || '否';
@@ -624,4 +652,3 @@
     </script>
 </body>
 </html>
-  
