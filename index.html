@@ -10,6 +10,8 @@
             --apple-green-light: #f6ffed;
             --apple-red: #ff4d4f;
             --apple-red-light: #fff1f0;
+            --apple-yellow: #faad14;
+            --apple-yellow-light: #fffbe6;
             --text-main: #333333;
             --text-light: #888888;
             --bg-color: #f7f9f7;
@@ -20,7 +22,6 @@
         
         body { 
             background-color: var(--bg-color);
-            /* 极简毛玻璃质感背景 */
             background-image: radial-gradient(circle at 0% 0%, rgba(82, 196, 26, 0.1) 0%, transparent 40%),
                               radial-gradient(circle at 100% 100%, rgba(255, 77, 79, 0.1) 0%, transparent 40%);
             background-attachment: fixed;
@@ -63,7 +64,8 @@
             background: white; color: var(--text-main); border: 1px solid #e0e0e0;
             transition: all 0.2s; white-space: nowrap;
         }
-        .btn-filter.active { background: var(--apple-green); color: white; border-color: var(--apple-green); }
+        .btn-filter.active-green { background: var(--apple-green); color: white; border-color: var(--apple-green); }
+        .btn-filter.active-yellow { background: var(--apple-yellow); color: white; border-color: var(--apple-yellow); }
         .btn-reset { background: var(--apple-red-light); color: var(--apple-red); border-color: #ffccc7; }
         .btn-filter:active, .btn-reset:active { transform: scale(0.95); }
 
@@ -88,7 +90,7 @@
             content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%;
             background: var(--apple-green); transition: background 0.3s;
         }
-        .card.unsign-card::before { background: var(--apple-red); } /* 没签到的左侧红条 */
+        .card.unsign-card::before { background: var(--apple-red); } 
         
         /* 头部（支持点击折叠） */
         .card-header { 
@@ -127,7 +129,7 @@
 
         /* 充值记录区域 */
         .recharge-box {
-            background: #fffbe6; border: 1px solid #ffe58f; border-radius: 12px;
+            background: var(--apple-yellow-light); border: 1px solid #ffe58f; border-radius: 12px;
             padding: 10px; margin-bottom: 12px; font-size: 12px; color: #d48806;
             display: flex; justify-content: space-between;
         }
@@ -149,7 +151,7 @@
         .remark-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
         .remark-text { font-size: 12px; color: #666; line-height: 1.5; word-break: break-all; }
 
-        /* 操作按钮（平整对齐） */
+        /* 操作按钮 */
         .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
         .btn-small { background: white; border: 1px solid #ddd; color: #666; padding: 6px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .btn-edit { border-color: var(--apple-green); color: var(--apple-green); }
@@ -200,7 +202,8 @@
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="搜站点/模型/备注..." oninput="renderSites()">
         </div>
-        <button class="btn-filter" id="filterBtn" onclick="toggleFilter()">🍏 仅看未签</button>
+        <button class="btn-filter" id="filterBtnUnsign" onclick="toggleFilter('unsign')">🍏 仅看未签</button>
+        <button class="btn-filter" id="filterBtnRecharge" onclick="toggleFilter('recharge')">💰 仅看充值</button>
         <button class="btn-reset" onclick="resetSigns()">🔄 重置签到</button>
     </div>
 
@@ -229,7 +232,7 @@
             <div class="form-group"><label>当前余额 / 积分</label><input type="text" id="balance" placeholder="例如：25.5"></div>
             
             <!-- 充值记录 -->
-            <div class="form-group" style="background: #fffbe6; padding: 15px; border-radius: 12px; border: 1px solid #ffe58f;">
+            <div class="form-group" style="background: var(--apple-yellow-light); padding: 15px; border-radius: 12px; border: 1px solid #ffe58f;">
                 <label style="color: #d48806;">💰 是否充值过？</label>
                 <select id="hasRecharge" onchange="toggleRechargeOptions()" style="margin-bottom: 10px;">
                     <option value="否">没充过值</option>
@@ -264,10 +267,10 @@
     <script>
         let sites = JSON.parse(localStorage.getItem('mySitesV7')) || []; 
         let isEditing = false;
-        let isFiltering = false;
+        
+        // 筛选状态：'none' | 'unsign' | 'recharge'
+        let currentFilter = 'none'; 
         let searchKeyword = '';
-
-        // 初始化拖拽
         let draggedIndex = null;
 
         function updateDashboard() {
@@ -283,10 +286,22 @@
             document.getElementById('totalUnsign').innerText = unsignCount;
         }
 
-        // 搜索和筛选逻辑
-        function toggleFilter() {
-            isFiltering = !isFiltering;
-            document.getElementById('filterBtn').classList.toggle('active', isFiltering);
+        // 互斥的筛选逻辑
+        function toggleFilter(type) {
+            if (currentFilter === type) {
+                // 如果点击的是当前已激活的，则取消筛选
+                currentFilter = 'none';
+            } else {
+                currentFilter = type;
+            }
+
+            // 更新按钮UI
+            const btnUnsign = document.getElementById('filterBtnUnsign');
+            const btnRecharge = document.getElementById('filterBtnRecharge');
+            
+            btnUnsign.className = currentFilter === 'unsign' ? 'btn-filter active-green' : 'btn-filter';
+            btnRecharge.className = currentFilter === 'recharge' ? 'btn-filter active-yellow' : 'btn-filter';
+            
             renderSites();
         }
 
@@ -324,16 +339,19 @@
             const list = document.getElementById('siteList');
             list.innerHTML = '';
             
-            // 获取搜索词
             searchKeyword = document.getElementById('searchInput').value.toLowerCase();
 
             sites.forEach((site, index) => {
-                // 1. 筛选逻辑：只看未签
-                if (isFiltering && (!site.supportSign || site.supportSign === '否' || site.isSigned === '是')) {
-                    return; 
+                // 1. 筛选逻辑
+                if (currentFilter === 'unsign') {
+                    // 只显示：支持签到 且 未签到 的
+                    if (!(site.supportSign === '是' && site.isSigned === '否')) return;
+                } else if (currentFilter === 'recharge') {
+                    // 只显示：有充值记录 的
+                    if (!(site.hasRecharge === '是' && site.rechargeAmount)) return;
                 }
 
-                // 2. 搜索逻辑：搜索站点名、模型名、备注、URL
+                // 2. 搜索逻辑
                 let searchContent = site.name + (site.remark||'') + (site.customUrl||'');
                 if(site.foodModels) {
                     site.foodModels.forEach(m => { searchContent += (m.name + m.price); });
@@ -387,11 +405,9 @@
 
                 const card = document.createElement('div');
                 const isCollapsed = site.isCollapsed ? 'collapsed' : '';
-                // 如果支持签到且未签到，左侧加红条
                 const cardClass = (site.supportSign === '是' && site.isSigned === '否') ? 'unsign-card' : '';
                 card.className = `card ${isCollapsed} ${cardClass}`;
                 
-                // 拖拽属性
                 card.setAttribute('draggable', 'true');
                 card.setAttribute('data-index', index);
                 card.addEventListener('dragstart', handleDragStart);
@@ -440,7 +456,7 @@
         }
 
         function handleDragOver(e) {
-            e.preventDefault(); // 必须阻止默认行为才能触发 drop
+            e.preventDefault(); 
             e.dataTransfer.dropEffect = 'move';
         }
 
@@ -450,7 +466,6 @@
             if (targetCard && draggedIndex !== null) {
                 const targetIndex = targetCard.getAttribute('data-index');
                 if (draggedIndex !== targetIndex) {
-                    // 交换数组中的位置
                     const draggedItem = sites[draggedIndex];
                     sites.splice(draggedIndex, 1);
                     sites.splice(targetIndex, 0, draggedItem);
@@ -461,7 +476,6 @@
             document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging'));
             draggedIndex = null;
         }
-        // ---------------
 
         function toggleSign(index) {
             sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
@@ -499,9 +513,8 @@
             document.getElementById('customUrl').value = '';
             document.getElementById('remark').value = '';
             
-            // 充值记录重置
             document.getElementById('hasRecharge').value = '否';
-            document.getElementById('rechargeDate').value = new Date().toISOString().split('T')[0]; // 默认今天
+            document.getElementById('rechargeDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('rechargeAmount').value = '';
             toggleRechargeOptions();
 
