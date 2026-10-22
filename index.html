@@ -1,729 +1,312 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>qiuqiuのapi 🍎🍏</title>
-    <style>
-        :root {
-            --apple-green: #52c41a;
-            --apple-green-light: #f6ffed;
-            --apple-red: #ff4d4f;
-            --apple-red-light: #fff1f0;
-            --apple-yellow: #faad14;
-            --apple-yellow-light: #fffbe6;
-            --qq-blue: #12b7f5;
-            --qq-blue-light: #e6f7ff;
-            --text-main: #333333;
-            --text-light: #888888;
-            --bg-color: #f7f9f7;
-            --card-bg: #ffffff;
-        }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; }
-        
-        body { 
-            background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 0% 0%, rgba(82, 196, 26, 0.1) 0%, transparent 40%),
-                              radial-gradient(circle at 100% 100%, rgba(255, 77, 79, 0.1) 0%, transparent 40%);
-            background-attachment: fixed;
-            color: var(--text-main); 
-            padding: 15px; 
-            padding-bottom: 100px; 
-            min-height: 100vh;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>qiuqiuのapi 🍎🍏</title>
+<style>
+:root { --g: #52c41a; --gl: #f6ffed; --r: #ff4d4f; --rl: #fff1f0; --y: #faad14; --yl: #fffbe6; --b: #12b7f5; --bl: #e6f7ff; --t: #333; --tl: #888; --bg: #f7f9f7; --cbg: #fff; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+body { background-color: var(--bg); background-image: radial-gradient(circle at 0% 0%, rgba(82,196,26,0.1) 0%, transparent 40%), radial-gradient(circle at 100% 100%, rgba(255,77,79,0.1) 0%, transparent 40%); background-attachment: fixed; color: var(--t); padding: 15px; padding-bottom: 100px; min-height: 100vh; }
+.top-bar { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #fff; }
+h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); margin-bottom: 10px; }
+.dashboard { display: flex; justify-content: space-around; text-align: center; font-size: 12px; color: var(--tl); }
+.dashboard span { display: block; font-size: 16px; font-weight: bold; color: var(--t); margin-top: 2px; }
+.dashboard .gt { color: var(--g); }
+.toolbar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+.search-box { flex: 1; min-width: 120px; position: relative; }
+.search-box input { width: 100%; padding: 10px 15px 10px 35px; border-radius: 12px; border: 1px solid #e0e0e0; background: white; font-size: 14px; outline: none; }
+.search-box::before { content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; }
+.btn-f, .btn-r, .btn-s { padding: 10px 15px; border-radius: 12px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; background: white; color: var(--t); border: 1px solid #e0e0e0; transition: all 0.2s; white-space: nowrap; }
+.btn-f.ag { background: var(--g); color: white; border-color: var(--g); }
+.btn-f.ay { background: var(--y); color: white; border-color: var(--y); }
+.btn-r { background: var(--rl); color: var(--r); border-color: #ffccc7; }
+.btn-s { background: #f0f5ff; color: #2f54eb; border-color: #adc6ff; }
+.btn-f:active, .btn-r:active, .btn-s:active { transform: scale(0.95); }
+.fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--r); color: white; font-size: 30px; line-height: 60px; text-align: center; box-shadow: 0 6px 16px rgba(255,77,79,0.4); border: 3px solid white; cursor: pointer; z-index: 99; transition: transform 0.2s; }
+.fab:active { transform: scale(0.9); }
+.card { background: var(--cbg); border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; overflow: hidden; position: relative; transition: all 0.3s ease; }
+.card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--g); transition: background 0.3s; }
+.card.uc::before { background: var(--r); }
+.card-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 18px 25px; cursor: pointer; user-select: none; }
+.site-name { font-size: 18px; font-weight: 800; color: #222; }
+.toggle-icon { font-size: 22px; }
+.card-body { padding: 0 20px 20px 25px; display: block; }
+.card.collapsed .card-body { display: none; }
+.link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 12px;}
+.site-link { font-size: 13px; color: var(--g); text-decoration: none; background: var(--gl); padding: 6px 12px; border-radius: 8px; font-weight: bold; }
+.btn-copy { background: #f5f5f5; border: 1px solid #e0e0e0; color: #666; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+.info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 10px; }
+.info-label { color: var(--tl); font-size: 13px; font-weight: bold; }
+.balance { color: var(--r); font-weight: 900; font-size: 18px; }
+.switch-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.switch-text { font-size: 13px; font-weight: bold; }
+.switch-text.un { color: var(--r); }
+.switch-text.si { color: var(--g); }
+.toggle-switch { position: relative; width: 44px; height: 24px; background-color: #ddd; border-radius: 24px; transition: 0.3s; }
+.toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.toggle-switch.active { background-color: var(--g); }
+.toggle-switch.active::after { transform: translateX(20px); }
 
-        /* 顶部状态栏 */
-        .top-bar {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid #fff;
-        }
-        h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--apple-red); margin-bottom: 10px; }
-        
-        .dashboard { display: flex; justify-content: space-around; text-align: center; font-size: 12px; color: var(--text-light); }
-        .dashboard span { display: block; font-size: 16px; font-weight: bold; color: var(--text-main); margin-top: 2px; }
-        .dashboard .green-text { color: var(--apple-green); }
+/* 充值记录区域升级 */
+.recharge-box { background: var(--yl); border: 1px solid #ffe58f; border-radius: 12px; padding: 12px; margin-bottom: 12px; font-size: 13px; color: #d48806; }
+.recharge-title { font-weight: bold; margin-bottom: 6px; border-bottom: 1px dashed #ffe58f; padding-bottom: 6px; display: flex; justify-content: space-between;}
+.recharge-list { display: flex; flex-direction: column; gap: 4px; }
+.recharge-item { display: flex; justify-content: space-between; font-size: 12px; color: #b07a00;}
+.recharge-total { font-weight: bold; color: var(--r); font-size: 14px; }
 
-        /* 工具栏 */
-        .toolbar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .search-box { flex: 1; min-width: 120px; position: relative; }
-        .search-box input {
-            width: 100%; padding: 10px 15px 10px 35px; border-radius: 12px;
-            border: 1px solid #e0e0e0; background: white; font-size: 14px; outline: none;
-        }
-        .search-box::before {
-            content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px;
-        }
-        .btn-filter, .btn-reset, .btn-sync {
-            padding: 10px 15px; border-radius: 12px; font-size: 13px; font-weight: bold;
-            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;
-            background: white; color: var(--text-main); border: 1px solid #e0e0e0;
-            transition: all 0.2s; white-space: nowrap;
-        }
-        .btn-filter.active-green { background: var(--apple-green); color: white; border-color: var(--apple-green); }
-        .btn-filter.active-yellow { background: var(--apple-yellow); color: white; border-color: var(--apple-yellow); }
-        .btn-reset { background: var(--apple-red-light); color: var(--apple-red); border-color: #ffccc7; }
-        .btn-sync { background: #f0f5ff; color: #2f54eb; border-color: #adc6ff; }
-        .btn-filter:active, .btn-reset:active, .btn-sync:active { transform: scale(0.95); }
-
-        /* 悬浮添加按钮 */
-        .fab { 
-            position: fixed; bottom: 30px; right: 20px; 
-            width: 60px; height: 60px; border-radius: 50%; 
-            background: var(--apple-red); color: white; font-size: 30px; line-height: 60px; text-align: center; 
-            box-shadow: 0 6px 16px rgba(255, 77, 79, 0.4); 
-            border: 3px solid white; cursor: pointer; z-index: 99;
-            transition: transform 0.2s;
-        }
-        .fab:active { transform: scale(0.9); }
-
-        /* 卡片样式 */
-        .card { 
-            background: var(--card-bg); border-radius: 20px; margin-bottom: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;
-            overflow: hidden; position: relative; transition: all 0.3s ease;
-        }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%;
-            background: var(--apple-green); transition: background 0.3s;
-        }
-        .card.unsign-card::before { background: var(--apple-red); } 
-        
-        .card-header { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 18px 20px 18px 25px; cursor: pointer; user-select: none;
-        }
-        .site-name { font-size: 18px; font-weight: 800; color: #222; }
-        .toggle-icon { font-size: 22px; }
-        
-        .card-body { padding: 0 20px 20px 25px; display: block; }
-        .card.collapsed .card-body { display: none; }
-
-        /* 链接行 */
-        .link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 12px;}
-        .site-link { font-size: 13px; color: var(--apple-green); text-decoration: none; background: var(--apple-green-light); padding: 6px 12px; border-radius: 8px; font-weight: bold; }
-        .btn-copy { 
-            background: #f5f5f5; border: 1px solid #e0e0e0; color: #666; 
-            padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;
-            cursor: pointer; white-space: nowrap;
-        }
-        
-        .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 10px; }
-        .info-label { color: var(--text-light); font-size: 13px; font-weight: bold; }
-        .balance { color: var(--apple-red); font-weight: 900; font-size: 18px; }
-
-        /* 滑动开关签到 */
-        .switch-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .switch-text { font-size: 13px; font-weight: bold; }
-        .switch-text.unsigned { color: var(--apple-red); }
-        .switch-text.signed { color: var(--apple-green); }
-        .toggle-switch { position: relative; width: 44px; height: 24px; background-color: #ddd; border-radius: 24px; transition: 0.3s; }
-        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .toggle-switch.active { background-color: var(--apple-green); }
-        .toggle-switch.active::after { transform: translateX(20px); }
-
-        /* 充值记录 */
-        .recharge-box {
-            background: var(--apple-yellow-light); border: 1px solid #ffe58f; border-radius: 12px;
-            padding: 10px; margin-bottom: 12px; font-size: 12px; color: #d48806;
-            display: flex; justify-content: space-between;
-        }
-
-        /* URL 专属区域 */
-        .url-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .url-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-        .url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
-        .url-text { font-size: 12px; color: #555; word-break: break-all; font-family: monospace;}
-
-        /* 账号密码专属区域 */
-        .auth-box { 
-            background: #f9f0ff; border: 1px dashed #d3adf7; 
-            border-radius: 12px; padding: 10px; margin-bottom: 10px; 
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .auth-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .auth-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-        .auth-label { font-size: 11px; color: #722ed1; font-weight: bold; margin-bottom: 2px; }
-        .auth-text { font-size: 13px; color: #391085; word-break: break-all; font-family: monospace; font-weight: bold;}
-        .btn-eye {
-            background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0 5px;
-        }
-
-        /* QQ群专属区域 */
-        .qq-box { 
-            background: var(--qq-blue-light); border: 1px dashed #91d5ff; 
-            border-radius: 12px; padding: 10px; margin-bottom: 12px; 
-            display: flex; justify-content: space-between; align-items: center; gap: 10px; 
-        }
-        .qq-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-        .qq-label { font-size: 11px; color: var(--qq-blue); font-weight: bold; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;}
-        .qq-text { font-size: 14px; color: #0050b3; font-weight: bold; font-family: monospace;}
-
-        /* 好吃模型 */
-        .model-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-        .model-item { background: var(--apple-green-light); border: 1px solid #b7eb8f; border-radius: 10px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .model-name { font-size: 13px; color: #389e0d; font-weight: bold; }
-        .model-price { font-size: 12px; color: white; font-weight: bold; background: var(--apple-green); padding: 2px 8px; border-radius: 6px; }
-
-        /* 普通备注 */
-        .remark-box { background: #fcfcfc; border: 1px dashed #ddd; border-radius: 12px; padding: 10px; margin-bottom: 12px; }
-        .remark-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
-        .remark-text { font-size: 12px; color: #666; line-height: 1.5; word-break: break-all; }
-
-        /* 操作按钮 */
-        .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-        .btn-small { background: white; border: 1px solid #ddd; color: #666; padding: 6px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .btn-edit { border-color: var(--apple-green); color: var(--apple-green); }
-        .btn-delete { border-color: var(--apple-red); color: var(--apple-red); }
-
-        /* 弹窗表单 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
-        .modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; padding: 25px; overflow-y: auto; animation: slideUp 0.3s; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: bold; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; background: #fafafa; }
-        .form-group input:focus { border-color: var(--apple-green); background: white; }
-        
-        .dynamic-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .input-model { flex: 2; }
-        .input-price { flex: 1; }
-        .btn-remove-model { background: var(--apple-red-light); color: var(--apple-red); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-add-model { background: var(--apple-green-light); color: var(--apple-green); border: 1px dashed var(--apple-green); padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 15px;}
-        
-        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-        .btn-cancel { flex: 1; background: #f5f5f5; color: #666; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
-        .btn-save { flex: 2; background: var(--apple-green); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
-
-        .empty-state { text-align: center; color: #999; margin-top: 50px; font-size: 14px; }
-        .hidden { display: none !important; }
-    </style>
+.url-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.url-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+.url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
+.url-text { font-size: 12px; color: #555; word-break: break-all; font-family: monospace;}
+.auth-box { background: #f9f0ff; border: 1px dashed #d3adf7; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+.auth-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.auth-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+.auth-label { font-size: 11px; color: #722ed1; font-weight: bold; margin-bottom: 2px; }
+.auth-text { font-size: 13px; color: #391085; word-break: break-all; font-family: monospace; font-weight: bold;}
+.btn-eye { background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0 5px; }
+.qq-box { background: var(--bl); border: 1px dashed #91d5ff; border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.qq-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+.qq-label { font-size: 11px; color: var(--b); font-weight: bold; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;}
+.qq-text { font-size: 14px; color: #0050b3; font-weight: bold; font-family: monospace;}
+.model-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.model-item { background: var(--gl); border: 1px solid #b7eb8f; border-radius: 10px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+.model-name { font-size: 13px; color: #389e0d; font-weight: bold; }
+.model-price { font-size: 12px; color: white; font-weight: bold; background: var(--g); padding: 2px 8px; border-radius: 6px; }
+.remark-box { background: #fcfcfc; border: 1px dashed #ddd; border-radius: 12px; padding: 10px; margin-bottom: 12px; }
+.remark-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
+.remark-text { font-size: 12px; color: #666; line-height: 1.5; word-break: break-all; }
+.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+.btn-small { background: white; border: 1px solid #ddd; color: #666; padding: 6px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
+.btn-edit { border-color: var(--g); color: var(--g); }
+.btn-delete { border-color: var(--r); color: var(--r); }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
+.modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; padding: 25px; overflow-y: auto; animation: slideUp 0.3s; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: bold; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; background: #fafafa; }
+.form-group input:focus { border-color: var(--g); background: white; }
+.dynamic-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center;}
+.input-model { flex: 2; }
+.input-price { flex: 1; }
+.btn-remove-model { background: var(--rl); color: var(--r); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; height: 42px; }
+.btn-add-model { background: var(--gl); color: var(--g); border: 1px dashed var(--g); padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 15px;}
+.modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+.btn-cancel { flex: 1; background: #f5f5f5; color: #666; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
+.btn-save { flex: 2; background: var(--g); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
+.empty-state { text-align: center; color: #999; margin-top: 50px; font-size: 14px; }
+.hidden { display: none !important; }
+</style>
 </head>
 <body>
+<div class="top-bar"><h1>qiuqiuのapi</h1><div class="dashboard"><div>总余额<span class="gt" id="tb">0</span></div><div>总站点<span id="ts">0</span></div><div>待签到<span style="color:var(--r)" id="tu">0</span></div></div></div>
+<div class="toolbar">
+<div class="search-box"><input type="text" id="si" placeholder="搜站点/用户名/模型..." oninput="rs()"></div>
+<button class="btn-f" id="fu" onclick="tf('unsign')">🍏 仅看未签</button>
+<button class="btn-f" id="fr" onclick="tf('recharge')">💰 仅看充值</button>
+<button class="btn-r" onclick="resSigns()">🔄 重置</button>
+<button class="btn-s" onclick="openSync()">☁️ 同步</button>
+</div>
+<div id="sl"></div>
+<button class="fab" onclick="openForm()">+</button>
 
-    <!-- 顶部看板 -->
-    <div class="top-bar">
-        <h1>qiuqiuのapi</h1>
-        <div class="dashboard">
-            <div>总余额<span class="green-text" id="totalBalance">0</span></div>
-            <div>总站点<span id="totalSites">0</span></div>
-            <div>待签到<span style="color: var(--apple-red);" id="totalUnsign">0</span></div>
-        </div>
-    </div>
+<div class="modal" id="syncModal">
+<div class="modal-content">
+<h2 style="margin-bottom:20px;text-align:center;color:#2f54eb">☁️ 数据备份与恢复</h2>
+<div class="form-group" style="border-bottom:2px dashed #eee;padding-bottom:20px">
+<label style="color:#1890ff;font-size:15px">📤 导出数据</label>
+<p style="font-size:12px;color:#999;margin-bottom:10px">下载为文件最安全！</p>
+<button type="button" class="btn-add-model" style="background:#e6f7ff;border-color:#91d5ff;color:#1890ff" onclick="expFile()">💾 下载备份文件 (.json)</button>
+<label style="margin-top:15px">或者：复制文本</label>
+<textarea id="expTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="生成文本..."></textarea>
+<button type="button" class="btn-copy" style="width:100%;padding:10px" onclick="expTxt()">📋 生成并复制文本</button>
+</div>
+<div class="form-group" style="padding-top:10px">
+<label style="color:var(--g);font-size:15px">📥 导入数据</label>
+<p style="font-size:12px;color:#999;margin-bottom:10px">选择文件或粘贴文本。</p>
+<input type="file" id="impFile" accept=".json" style="display:none" onchange="impFile(event)">
+<button type="button" class="btn-add-model" style="background:white;border-color:var(--g);color:var(--g)" onclick="document.getElementById('impFile').click()">📂 选择文件上传</button>
+<label style="margin-top:15px">或者：粘贴文本导入</label>
+<textarea id="impTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="粘贴备份文本..."></textarea>
+<button type="button" class="btn-add-model" style="background:var(--g);border-color:var(--g);color:white" onclick="impTxt()">✅ 确认导入并覆盖</button>
+</div>
+<div class="modal-actions"><button class="btn-cancel" onclick="closeSync()">关闭</button></div>
+</div>
+</div>
 
-    <!-- 工具栏 -->
-    <div class="toolbar">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="搜站点/用户名/模型..." oninput="renderSites()">
-        </div>
-        <button class="btn-filter" id="filterBtnUnsign" onclick="toggleFilter('unsign')">🍏 仅看未签</button>
-        <button class="btn-filter" id="filterBtnRecharge" onclick="toggleFilter('recharge')">💰 仅看充值</button>
-        <button class="btn-reset" onclick="resetSigns()">🔄 重置</button>
-        <button class="btn-sync" onclick="openSyncModal()">☁️ 同步数据</button>
-    </div>
+<div class="modal" id="formModal">
+<div class="modal-content">
+<h2 id="mt" style="margin-bottom:20px;text-align:center;color:var(--g)">添加新站点</h2>
+<input type="hidden" id="eid">
+<div class="form-group"><label>站点名称 *</label><input type="text" id="sn" placeholder="例如：某某网"></div>
+<div class="form-group"><label>站点链接</label><input type="url" id="su" placeholder="https://..."></div>
+<div class="form-group"><label>是否支持签到？</label><select id="ss" onchange="tso()"><option value="是">支持</option><option value="否">不支持</option></select></div>
+<div id="sd" class="form-group"><label>今日是否已签到？</label><select id="is"><option value="否">未签到</option><option value="是">已签到 ✅</option></select></div>
+<div id="cg" class="form-group"><label>签到条件</label><input type="text" id="sc" placeholder="例如：需满10元"></div>
+<div class="form-group"><label>当前余额</label><input type="text" id="bal" placeholder="例如：25.5"></div>
 
-    <div id="siteList"></div>
-    <button class="fab" onclick="openModal()">+</button>
+<!-- 充值记录动态添加 -->
+<div class="form-group" style="background:var(--yl);padding:15px;border-radius:12px;border:1px solid #ffe58f">
+<label style="color:#d48806">💰 充值记录流水</label>
+<div id="rc"></div>
+<button type="button" class="btn-add-model" style="background:white;border-color:#d48806;color:#d48806;margin-top:5px;" onclick="addR()">+ 记录一笔充值</button>
+</div>
 
-    <!-- 同步数据弹窗 -->
-    <div class="modal" id="syncModal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 20px; text-align: center; color: #2f54eb;">☁️ 数据备份与恢复</h2>
-            
-            <div class="form-group" style="border-bottom: 2px dashed #eee; padding-bottom: 20px;">
-                <label style="color: #1890ff; font-size: 15px;">📤 导出数据（下载为文件）</label>
-                <p style="font-size: 12px; color: #999; margin-bottom: 10px;">推荐！将数据保存为文件，再也不怕复制漏掉。</p>
-                <button type="button" class="btn-add-model" style="background: #e6f7ff; border-color: #91d5ff; color: #1890ff;" onclick="exportFile()">💾 下载备份文件 (.json)</button>
-                
-                <label style="margin-top: 15px;">或者：复制文本（适合数据量少时）</label>
-                <textarea id="syncDataText" style="min-height: 60px; font-family: monospace; font-size: 12px; margin-bottom: 5px;" placeholder="点击下方按钮生成文本..."></textarea>
-                <button type="button" class="btn-copy" style="width: 100%; padding: 10px;" onclick="exportText()">📋 生成并复制文本</button>
-            </div>
+<div class="form-group" style="background:#fafafa;padding:15px;border-radius:12px;margin-bottom:10px"><label>专属 URL</label><input type="text" id="cu" placeholder="用于复制" style="background:white"></div>
+<div class="form-group" style="background:#f9f0ff;padding:15px;border-radius:12px;margin-bottom:10px;border:1px solid #d3adf7">
+<label style="color:#722ed1">🔐 专属用户名和密码</label>
+<input type="text" id="au" placeholder="输入用户名" style="background:white;margin-bottom:8px;border-color:transparent">
+<input type="text" id="ap" placeholder="输入密码" style="background:white;border-color:transparent">
+</div>
+<div class="form-group" style="background:var(--bl);padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #91d5ff">
+<label style="color:var(--b)">🐧 专属 QQ 群号</label>
+<input type="number" id="qg" placeholder="群号" style="background:white;border-color:transparent">
+</div>
+<div class="form-group">
+<label style="color:var(--g)">🍏 好吃模型列表</label>
+<div id="mc"></div>
+<button type="button" class="btn-add-model" onclick="addM()">+ 添加一个模型</button>
+</div>
+<div class="form-group"><label>额外备注</label><textarea id="rm" placeholder="记点什么..."></textarea></div>
+<div class="modal-actions"><button class="btn-cancel" onclick="closeForm()">取消</button><button class="btn-save" onclick="saveSite()">保存</button></div>
+</div>
+</div>
 
-            <div class="form-group" style="padding-top: 10px;">
-                <label style="color: var(--apple-green); font-size: 15px;">📥 导入数据</label>
-                <p style="font-size: 12px; color: #999; margin-bottom: 10px;">选择之前下载的文件，或者粘贴文本。</p>
-                
-                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importFromFile(event)">
-                <button type="button" class="btn-add-model" style="background: white; border-color: var(--apple-green); color: var(--apple-green);" onclick="document.getElementById('importFile').click()">📂 选择文件上传</button>
-                
-                <label style="margin-top: 15px;">或者：粘贴文本导入</label>
-                <textarea id="importDataText" style="min-height: 60px; font-family: monospace; font-size: 12px; margin-bottom: 5px;" placeholder="在此粘贴备份文本..."></textarea>
-                <button type="button" class="btn-add-model" style="background: var(--apple-green); border-color: var(--apple-green); color: white;" onclick="importFromText()">✅ 确认导入并覆盖</button>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeSyncModal()">关闭</button>
-            </div>
-        </div>
-    </div>
+<script>
+let sites = JSON.parse(localStorage.getItem('mySitesV12')) || [];
+let isEditing = false, currentFilter = 'none', searchKeyword = '';
 
-    <!-- 添加/编辑 弹窗 -->
-    <div class="modal" id="formModal">
-        <div class="modal-content">
-            <h2 id="modalTitle" style="margin-bottom: 20px; text-align: center; color: var(--apple-green);">添加新站点</h2>
-            <input type="hidden" id="editId">
-            
-            <div class="form-group"><label>站点名称 *</label><input type="text" id="siteName" placeholder="例如：某某网"></div>
-            <div class="form-group"><label>站点链接（访问用）</label><input type="url" id="siteUrl" placeholder="https://..."></div>
-            
-            <div class="form-group">
-                <label>是否支持签到？</label>
-                <select id="supportSign" onchange="toggleSignOptions()"><option value="是">支持签到</option><option value="否">不支持签到</option></select>
-            </div>
-            <div id="signDetailGroup" class="form-group">
-                <label>今日是否已签到？</label>
-                <select id="isSigned"><option value="否">未签到</option><option value="是">已签到 ✅</option></select>
-            </div>
-            <div id="conditionGroup" class="form-group"><label>签到条件 / 限制</label><input type="text" id="signCondition" placeholder="例如：需满10元"></div>
-            
-            <div class="form-group"><label>当前余额 / 积分</label><input type="text" id="balance" placeholder="例如：25.5"></div>
-            
-            <div class="form-group" style="background: var(--apple-yellow-light); padding: 15px; border-radius: 12px; border: 1px solid #ffe58f;">
-                <label style="color: #d48806;">💰 是否充值过？</label>
-                <select id="hasRecharge" onchange="toggleRechargeOptions()" style="margin-bottom: 10px;">
-                    <option value="否">没充过值</option>
-                    <option value="是">充过值（记录一笔）</option>
-                </select>
-                <div id="rechargeDetail" class="hidden">
-                    <input type="date" id="rechargeDate" style="margin-bottom: 8px;">
-                    <input type="text" id="rechargeAmount" placeholder="充值金额，例如：50">
-                </div>
-            </div>
+function openSync() { document.getElementById('expTxt').value=''; document.getElementById('impTxt').value=''; document.getElementById('impFile').value=''; document.getElementById('syncModal').style.display='flex'; }
+function closeSync() { document.getElementById('syncModal').style.display='none'; }
+function expFile() { if(!sites.length) return alert('无数据'); const b=new Blob([JSON.stringify(sites,null,2)],{type:"application/json"}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`qiuqiu_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u); }
+function expTxt() { if(!sites.length) return alert('无数据'); const s=JSON.stringify(sites); document.getElementById('expTxt').value=s; navigator.clipboard.writeText(s).then(()=>alert('✅ 已复制')).catch(()=>alert('请手动复制')); }
+function impFile(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(e){ try{ const d=JSON.parse(e.target.result); if(!Array.isArray(d)) throw 0; if(confirm('覆盖当前数据？')){ sites=d; sd(); rs(); closeSync(); alert('🎉 导入成功'); } }catch(err){ alert('❌ 格式错误'); } }; r.readAsText(f); }
+function impTxt() { const s=document.getElementById('impTxt').value.trim(); if(!s)return alert('请粘贴'); try{ const d=JSON.parse(s); if(!Array.isArray(d)) throw 0; if(confirm('覆盖当前数据？')){ sites=d; sd(); rs(); closeSync(); alert('🎉 导入成功'); } }catch(e){ alert('❌ 格式错误'); } }
 
-            <div class="form-group" style="background: #fafafa; padding: 15px; border-radius: 12px; margin-bottom: 10px;">
-                <label>专属 URL（提取用）</label>
-                <input type="text" id="customUrl" placeholder="用于复制，不是点击访问的链接" style="background: white;">
-            </div>
+function ud() { let tb=0, tu=0; sites.forEach(s=>{ const b=parseFloat(s.balance); if(!isNaN(b)) tb+=b; if(s.supportSign==='是'&&s.isSigned==='否') tu++; }); document.getElementById('tb').innerText=tb.toFixed(1); document.getElementById('ts').innerText=sites.length; document.getElementById('tu').innerText=tu; }
+function tf(t) { currentFilter = (currentFilter===t)?'none':t; document.getElementById('fu').className = currentFilter==='unsign'?'btn-f ag':'btn-f'; document.getElementById('fr').className = currentFilter==='recharge'?'btn-f ay':'btn-f'; rs(); }
+function resSigns() { if(confirm('重置所有签到状态？')){ sites.forEach(s=>{ if(s.supportSign==='是') s.isSigned='否'; }); sd(); rs(); } }
+function tso() { const v=document.getElementById('ss').value==='是'; document.getElementById('sd').classList.toggle('hidden',!v); document.getElementById('cg').classList.toggle('hidden',!v); }
+function addM(n='',p='') { const c=document.getElementById('mc'); const d=document.createElement('div'); d.className='dynamic-row'; d.innerHTML=`<input type="text" class="input-model mn" value="${n}" placeholder="名称"><input type="text" class="input-price mp" value="${p}" placeholder="价格"><button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>`; c.appendChild(d); }
 
-            <div class="form-group" style="background: #f9f0ff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #d3adf7;">
-                <label style="color: #722ed1;">🔐 专属用户名和密码</label>
-                <input type="text" id="accountUser" placeholder="输入用户名" style="background: white; margin-bottom: 8px; border-color: transparent;">
-                <input type="text" id="accountPass" placeholder="输入密码" style="background: white; border-color: transparent;">
-            </div>
+// 新增动态添加充值记录
+function addR(date = '', amount = '') {
+    const c = document.getElementById('rc');
+    const d = document.createElement('div');
+    d.className = 'dynamic-row';
+    // 如果没传日期，默认今天
+    const defaultDate = date || new Date().toISOString().split('T')[0];
+    d.innerHTML = `<input type="date" class="input-model r-date" value="${defaultDate}"><input type="text" class="input-price r-amount" value="${amount}" placeholder="金额"><button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>`;
+    c.appendChild(d);
+}
 
-            <div class="form-group" style="background: var(--qq-blue-light); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #91d5ff;">
-                <label style="color: var(--qq-blue);">🐧 专属 QQ 群号</label>
-                <input type="number" id="qqGroup" placeholder="填写QQ群号，例如：12345678" style="background: white; border-color: transparent;">
-            </div>
+function tp(i) { const p=document.getElementById('p'+i), e=document.getElementById('e'+i); if(p.innerText==='••••••'){ p.innerText=sites[i].accountPass; e.innerText='🙈'; }else{ p.innerText='••••••'; e.innerText='👁️'; } }
 
-            <div class="form-group">
-                <label style="color: var(--apple-green);">🍏 好吃模型列表</label>
-                <div id="modelContainer"></div>
-                <button type="button" class="btn-add-model" onclick="addModelInput()">+ 添加一个模型</button>
-            </div>
-            
-            <div class="form-group"><label>额外备注</label><textarea id="remark" placeholder="记点什么..."></textarea></div>
-            
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">取消</button>
-                <button class="btn-save" onclick="saveSite()">保存</button>
-            </div>
-        </div>
-    </div>
+function rs() {
+const l=document.getElementById('sl'); l.innerHTML=''; searchKeyword=document.getElementById('si').value.toLowerCase();
+sites.forEach((site,index)=>{
+if(currentFilter==='unsign'&&!(site.supportSign==='是'&&site.isSigned==='否'))return;
+if(currentFilter==='recharge'&&!(site.recharges&&site.recharges.length>0))return; // 筛选有流水的站点
+let sc=site.name+(site.remark||'')+(site.customUrl||'')+(site.qqGroup||'')+(site.accountUser||'');
+if(site.foodModels)site.foodModels.forEach(m=>{sc+=(m.name+m.price)});
+if(searchKeyword&&!sc.toLowerCase().includes(searchKeyword))return;
+let sh='';
+if(site.supportSign==='是'){const si=site.isSigned==='是'; sh=`<div class="info-row"><span class="info-label">签到状态</span><div class="switch-container" onclick="event.stopPropagation();togS(${index})"><span class="switch-text ${si?'si':'un'}">${si?'已签到':'未签到'}</span><div class="toggle-switch ${si?'active':''}"></div></div></div>${site.condition?`<div class="info-row"><span class="info-label">条件</span><span class="info-value" style="color:#d48806">${site.condition}</span></div>`:''}`;}
+let mh=''; if(site.foodModels&&site.foodModels.length>0){const ms=site.foodModels.map(m=>`<div class="model-item"><span class="model-name">${m.name}</span>${m.price?`<span class="model-price">💰 ${m.price}</span>`:''}</div>`).join(''); if(ms)mh=`<div class="model-grid">${ms}</div>`;}
+let uh=site.customUrl?`<div class="url-box"><div class="url-info"><div class="url-label">专属 URL</div><div class="url-text">${site.customUrl}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.customUrl}',this)">📋 复制</button></div>`:'';
+let ah=(site.accountUser||site.accountPass)?`<div class="auth-box">${site.accountUser?`<div class="auth-row"><div class="auth-info"><div class="auth-label">🔑 用户名</div><div class="auth-text">${site.accountUser}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.accountUser}',this)">📋 复制</button></div>`:''}${site.accountPass?`<div class="auth-row"><div class="auth-info"><div class="auth-label">🔒 密码</div><div class="auth-text" id="p${index}">••••••</div></div><button class="btn-eye" id="e${index}" onclick="event.stopPropagation();tp(${index})">👁️</button><button class="btn-copy" onclick="event.stopPropagation();cp('${site.accountPass}',this)">📋 复制</button></div>`:''}</div>`:'';
+let qh=site.qqGroup?`<div class="qq-box"><div class="qq-info"><div class="qq-label">🐧 官方QQ群</div><div class="qq-text">${site.qqGroup}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.qqGroup}',this)">📋 复制群号</button></div>`:'';
 
-    <script>
-        let sites = JSON.parse(localStorage.getItem('mySitesV11')) || []; // 升级到 V11
-        let isEditing = false;
-        let currentFilter = 'none'; 
-        let searchKeyword = '';
+// 充值记录渲染
+let rh = '';
+if (site.recharges && site.recharges.length > 0) {
+    let total = 0;
+    const listItems = site.recharges.map(r => {
+        const amt = parseFloat(r.amount);
+        if (!isNaN(amt)) total += amt;
+        return `<div class="recharge-item"><span>${r.date || '未知'}</span><span>+${r.amount || 0}</span></div>`;
+    }).join('');
+    
+    rh = `<div class="recharge-box">
+        <div class="recharge-title"><span>💰 充值流水</span><span class="recharge-total">总计: ${total.toFixed(1)}</span></div>
+        <div class="recharge-list">${listItems}</div>
+    </div>`;
+}
 
-        // === 新的文件导入导出逻辑 ===
-        function openSyncModal() {
-            document.getElementById('syncDataText').value = '';
-            document.getElementById('importDataText').value = '';
-            document.getElementById('importFile').value = '';
-            document.getElementById('syncModal').style.display = 'flex';
-        }
-        function closeSyncModal() { document.getElementById('syncModal').style.display = 'none'; }
+let rkh=site.remark?`<div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>`:'';
+const c=document.createElement('div'); const ic=site.isCollapsed?'collapsed':''; const cc=(site.supportSign==='是'&&site.isSigned==='否')?'uc':''; c.className=`card ${ic} ${cc}`;
+c.innerHTML=`<div class="card-header" onclick="togC(${index})"><div class="site-name">${site.name}</div><div class="toggle-icon">${ic?'🍎':'🍏'}</div></div><div class="card-body"><div class="link-row">${site.url?`<a href="${site.url.startsWith('http')?site.url:'https://'+site.url}" target="_blank" class="site-link">🔗 访问</a><button class="btn-copy" onclick="event.stopPropagation();cp('${site.url}',this)">📋 复制</button>`:''}</div>${sh}<div class="info-row"><span class="info-label">当前余额</span><span class="balance">${site.balance||'0'}</span></div>${rh}${uh}${ah}${qh}${mh}${rkh}<div class="actions"><button class="btn-small btn-edit" onclick="event.stopPropagation();edS(${index})">编辑</button><button class="btn-small btn-delete" onclick="event.stopPropagation();delS(${index})">删除</button></div></div>`;
+l.appendChild(c); });
+if(l.innerHTML==='')l.innerHTML='<div class="empty-state">没有符合条件的站点~</div>'; ud(); }
 
-        // 1. 下载为 JSON 文件
-        function exportFile() {
-            if(sites.length === 0) return alert('你现在没有数据可以导出哦~');
-            const dataStr = JSON.stringify(sites, null, 2); // 格式化输出，方便阅读
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `qiuqiu_api_backup_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+function togS(i){sites[i].isSigned=sites[i].isSigned==='是'?'否':'是';sd();rs();}
+function togC(i){sites[i].isCollapsed=!sites[i].isCollapsed;sd();rs();}
+function cp(t,b){let s=t.startsWith('http')||!t.includes('.')?t:'https://'+t;navigator.clipboard.writeText(s).then(()=>{const o=b.innerHTML;b.innerHTML='✅ 已复制';setTimeout(()=>b.innerHTML=o,1500)}).catch(()=>alert('复制失败'))}
+function sd(){localStorage.setItem('mySitesV12',JSON.stringify(sites))}
 
-        // 2. 复制为纯文本
-        function exportText() {
-            if(sites.length === 0) return alert('你现在没有数据可以导出哦~');
-            const dataStr = JSON.stringify(sites);
-            document.getElementById('syncDataText').value = dataStr;
-            navigator.clipboard.writeText(dataStr).then(() => {
-                alert('✅ 备份文本已生成并复制到剪贴板！');
-            }).catch(() => {
-                alert('生成成功，但自动复制失败，请手动长按上方文本框全选复制。');
-            });
-        }
+function openForm(){
+isEditing=false;document.getElementById('mt').innerText='添加新站点';document.getElementById('eid').value='';
+document.getElementById('sn').value='';document.getElementById('su').value='';document.getElementById('ss').value='是';
+document.getElementById('is').value='否';document.getElementById('sc').value='';document.getElementById('bal').value='';
+document.getElementById('cu').value='';document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('qg').value='';document.getElementById('rm').value='';
 
-        // 3. 从文件读取导入
-        function importFromFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+document.getElementById('rc').innerHTML=''; // 清空充值流水
+document.getElementById('mc').innerHTML='';addM();tso();document.getElementById('formModal').style.display='flex'
+}
+function closeForm(){document.getElementById('formModal').style.display='none'}
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsedData = JSON.parse(e.target.result);
-                    if (!Array.isArray(parsedData)) throw new Error('数据格式错误');
-                    if (confirm('⚠️ 警告：导入会覆盖当前设备上的所有数据，确定要继续吗？')) {
-                        sites = parsedData;
-                        saveData();
-                        renderSites();
-                        closeSyncModal();
-                        alert('🎉 文件导入成功！');
-                    }
-                } catch (err) {
-                    alert('❌ 导入失败：文件内容格式不正确。');
-                }
-            };
-            reader.readAsText(file);
-        }
+function saveSite(){
+const n=document.getElementById('sn').value.trim();if(!n)return alert('名称不能为空');
 
-        // 4. 从文本框粘贴导入
-        function importFromText() {
-            const importStr = document.getElementById('importDataText').value.trim();
-            if (!importStr) return alert('请先粘贴备份文本！');
-            try {
-                const parsedData = JSON.parse(importStr);
-                if (!Array.isArray(parsedData)) throw new Error('数据格式错误');
-                if (confirm('⚠️ 警告：导入会覆盖当前设备上的所有数据，确定要继续吗？')) {
-                    sites = parsedData;
-                    saveData();
-                    renderSites();
-                    closeSyncModal();
-                    alert('🎉 数据导入成功！');
-                }
-            } catch (e) {
-                alert('❌ 导入失败：粘贴的文本不完整或格式错误。');
-            }
-        }
-        // ===========================
+// 获取模型
+const mns=document.querySelectorAll('.mn'), mps=document.querySelectorAll('.mp'), fms=[];
+for(let i=0;i<mns.length;i++){const mn=mns[i].value.trim(),mp=mps[i].value.trim();if(mn||mp)fms.push({name:mn||'未命名',price:mp})}
 
-        function updateDashboard() {
-            let totalB = 0;
-            let unsignCount = 0;
-            sites.forEach(s => {
-                const b = parseFloat(s.balance);
-                if(!isNaN(b)) totalB += b;
-                if (s.supportSign === '是' && s.isSigned === '否') unsignCount++;
-            });
-            document.getElementById('totalBalance').innerText = totalB.toFixed(1);
-            document.getElementById('totalSites').innerText = sites.length;
-            document.getElementById('totalUnsign').innerText = unsignCount;
-        }
+// 获取充值记录
+const rds = document.querySelectorAll('.r-date'), ras = document.querySelectorAll('.r-amount'), rcs = [];
+for (let i = 0; i < rds.length; i++) {
+    const d = rds[i].value.trim();
+    const a = ras[i].value.trim();
+    if (d || a) rcs.push({ date: d, amount: a });
+}
 
-        function toggleFilter(type) {
-            currentFilter = (currentFilter === type) ? 'none' : type;
-            document.getElementById('filterBtnUnsign').className = currentFilter === 'unsign' ? 'btn-filter active-green' : 'btn-filter';
-            document.getElementById('filterBtnRecharge').className = currentFilter === 'recharge' ? 'btn-filter active-yellow' : 'btn-filter';
-            renderSites();
-        }
+const d={
+    name:n, url:document.getElementById('su').value.trim(), supportSign:document.getElementById('ss').value,
+    isSigned:document.getElementById('is').value, condition:document.getElementById('sc').value.trim(),
+    balance:document.getElementById('bal').value.trim(), recharges:rcs, // 保存多笔充值
+    customUrl:document.getElementById('cu').value.trim(), accountUser:document.getElementById('au').value.trim(),
+    accountPass:document.getElementById('ap').value.trim(), qqGroup:document.getElementById('qg').value.trim(),
+    foodModels:fms, remark:document.getElementById('rm').value.trim(),
+    isCollapsed:isEditing?sites[document.getElementById('eid').value].isCollapsed:false
+};
+if(isEditing)sites[document.getElementById('eid').value]=d;else sites.push(d);
+sd();closeForm();rs();
+}
 
-        function resetSigns() {
-            if(confirm('确定要把所有站点的签到状态重置为“未签到”吗？')){
-                sites.forEach(s => { if(s.supportSign === '是') s.isSigned = '否'; });
-                saveData(); renderSites();
-            }
-        }
+function edS(i){
+isEditing=true;const s=sites[i];
+document.getElementById('mt').innerText='编辑站点';document.getElementById('eid').value=i;
+document.getElementById('sn').value=s.name;document.getElementById('su').value=s.url||'';document.getElementById('ss').value=s.supportSign||'是';
+document.getElementById('is').value=s.isSigned||'否';document.getElementById('sc').value=s.condition||'';document.getElementById('bal').value=s.balance||'';
+document.getElementById('cu').value=s.customUrl||'';document.getElementById('au').value=s.accountUser||'';document.getElementById('ap').value=s.accountPass||'';document.getElementById('qg').value=s.qqGroup||'';document.getElementById('rm').value=s.remark||'';
 
-        function toggleRechargeOptions() {
-            document.getElementById('rechargeDetail').classList.toggle('hidden', document.getElementById('hasRecharge').value !== '是');
-        }
-        function toggleSignOptions() {
-            const isSupport = document.getElementById('supportSign').value === '是';
-            document.getElementById('signDetailGroup').classList.toggle('hidden', !isSupport);
-            document.getElementById('conditionGroup').classList.toggle('hidden', !isSupport);
-        }
+// 渲染充值记录
+document.getElementById('rc').innerHTML='';
+if (s.recharges && s.recharges.length > 0) {
+    s.recharges.forEach(r => addR(r.date, r.amount));
+} else if (s.hasRecharge === '是' && s.rechargeAmount) {
+    // 兼容旧数据：如果之前只有单笔，把它转成第一笔流水
+    addR(s.rechargeDate || '', s.rechargeAmount);
+}
 
-        function addModelInput(name = '', price = '') {
-            const container = document.getElementById('modelContainer');
-            const div = document.createElement('div');
-            div.className = 'dynamic-row';
-            div.innerHTML = `
-                <input type="text" class="input-model model-name-input" value="${name}" placeholder="模型名称">
-                <input type="text" class="input-price model-price-input" value="${price}" placeholder="价格">
-                <button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>
-            `;
-            container.appendChild(div);
-        }
+document.getElementById('mc').innerHTML='';
+if(s.foodModels&&s.foodModels.length>0)s.foodModels.forEach(m=>addM(m.name,m.price));else addM();
+tso();document.getElementById('formModal').style.display='flex'
+}
 
-        function togglePassword(index) {
-            const passEl = document.getElementById(`pass-${index}`);
-            const eyeBtn = document.getElementById(`eye-${index}`);
-            const realPass = sites[index].accountPass;
-            
-            if (passEl.innerText === '••••••') {
-                passEl.innerText = realPass;
-                eyeBtn.innerText = '🙈';
-            } else {
-                passEl.innerText = '••••••';
-                eyeBtn.innerText = '👁️';
-            }
-        }
-
-        function renderSites() {
-            const list = document.getElementById('siteList');
-            list.innerHTML = '';
-            
-            searchKeyword = document.getElementById('searchInput').value.toLowerCase();
-
-            sites.forEach((site, index) => {
-                if (currentFilter === 'unsign' && !(site.supportSign === '是' && site.isSigned === '否')) return;
-                if (currentFilter === 'recharge' && !(site.hasRecharge === '是' && site.rechargeAmount)) return;
-
-                let searchContent = site.name + (site.remark||'') + (site.customUrl||'') + (site.qqGroup||'') + (site.accountUser||'');
-                if(site.foodModels) site.foodModels.forEach(m => { searchContent += (m.name + m.price); });
-                if (searchKeyword && !searchContent.toLowerCase().includes(searchKeyword)) return;
-
-                let signHtml = '';
-                if (site.supportSign === '是') {
-                    const isSigned = site.isSigned === '是';
-                    signHtml = `
-                    <div class="info-row">
-                        <span class="info-label">签到状态</span>
-                        <div class="switch-container" onclick="event.stopPropagation(); toggleSign(${index})">
-                            <span class="switch-text ${isSigned ? 'signed' : 'unsigned'}">${isSigned ? '已签到' : '未签到'}</span>
-                            <div class="toggle-switch ${isSigned ? 'active' : ''}"></div>
-                        </div>
-                    </div>
-                    ${site.condition ? `<div class="info-row"><span class="info-label">条件</span><span class="info-value" style="color: #d48806;">${site.condition}</span></div>` : ''}
-                    `;
-                }
-
-                let modelHtml = '';
-                if (site.foodModels && site.foodModels.length > 0) {
-                    const models = site.foodModels.map(m => `
-                        <div class="model-item">
-                            <span class="model-name">${m.name}</span>
-                            ${m.price ? `<span class="model-price">💰 ${m.price}</span>` : ''}
-                        </div>
-                    `).join('');
-                    if(models) modelHtml = `<div class="model-grid">${models}</div>`;
-                }
-
-                let urlHtml = site.customUrl ? `
-                    <div class="url-box">
-                        <div class="url-info"><div class="url-label">专属 URL</div><div class="url-text">${site.customUrl}</div></div>
-                        <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.customUrl}', this)">📋 复制</button>
-                    </div>` : '';
-
-                let authHtml = (site.accountUser || site.accountPass) ? `
-                    <div class="auth-box">
-                        ${site.accountUser ? `
-                        <div class="auth-row">
-                            <div class="auth-info"><div class="auth-label">🔑 用户名</div><div class="auth-text">${site.accountUser}</div></div>
-                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.accountUser}', this)">📋 复制</button>
-                        </div>` : ''}
-                        ${site.accountPass ? `
-                        <div class="auth-row">
-                            <div class="auth-info">
-                                <div class="auth-label">🔒 密码</div>
-                                <div class="auth-text" id="pass-${index}">••••••</div>
-                            </div>
-                            <button class="btn-eye" id="eye-${index}" onclick="event.stopPropagation(); togglePassword(${index})">👁️</button>
-                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.accountPass}', this)">📋 复制</button>
-                        </div>` : ''}
-                    </div>` : '';
-
-                let qqHtml = site.qqGroup ? `
-                    <div class="qq-box">
-                        <div class="qq-info">
-                            <divclass="qq-label">🐧 官方QQ群</div>
-                            <div class="qq-text">${site.qqGroup}</div>
-                        </div>
-                        <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.qqGroup}', this)">📋 复制群号</button>
-                    </div>` : '';
-
-                let rechargeHtml = (site.hasRecharge === '是' && site.rechargeAmount) ? `
-                    <div class="recharge-box">
-                        <span>充值记录 (${site.rechargeDate || '未知日期'})</span>
-                        <span>金额: ${site.rechargeAmount}</span>
-                    </div>` : '';
-
-                const remarkHtml = site.remark ? `<div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>` : '';
-
-                const card = document.createElement('div');
-                const isCollapsed = site.isCollapsed ? 'collapsed' : '';
-                const cardClass = (site.supportSign === '是' && site.isSigned === '否') ? 'unsign-card' : '';
-                card.className = `card ${isCollapsed} ${cardClass}`;
-
-                card.innerHTML = `
-                    <div class="card-header" onclick="toggleCollapse(${index})">
-                        <div class="site-name">${site.name}</div>
-                        <div class="toggle-icon">${isCollapsed ? '🍎' : '🍏'}</div>
-                    </div>
-                    <div class="card-body">
-                        <div class="link-row">
-                            ${site.url ? `
-                            <a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="site-link">🔗 访问</a>
-                            <button class="btn-copy" onclick="event.stopPropagation(); copyText('${site.url}', this)">📋 复制</button>
-                            ` : ''}
-                        </div>
-                        ${signHtml}
-                        <div class="info-row"><span class="info-label">当前余额</span><span class="balance">${site.balance || '0'}</span></div>
-                        ${rechargeHtml}
-                        ${urlHtml}
-                        ${authHtml}
-                        ${qqHtml}
-                        ${modelHtml}
-                        ${remarkHtml}
-                        <div class="actions">
-                            <button class="btn-small btn-edit" onclick="event.stopPropagation(); editSite(${index})">编辑</button>
-                            <button class="btn-small btn-delete" onclick="event.stopPropagation(); deleteSite(${index})">删除</button>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-
-            if (list.innerHTML === '') {
-                list.innerHTML = '<div class="empty-state">没有找到符合条件的站点~</div>';
-            }
-            updateDashboard();
-        }
-
-        function toggleSign(index) {
-            sites[index].isSigned = sites[index].isSigned === '是' ? '否' : '是';
-            saveData(); renderSites(); 
-        }
-        function toggleCollapse(index) {
-            sites[index].isCollapsed = !sites[index].isCollapsed;
-            saveData(); renderSites();
-        }
-
-        function copyText(text, btnElement) {
-            let copyStr = text.startsWith('http') || !text.includes('.') ? text : 'https://' + text;
-            navigator.clipboard.writeText(copyStr).then(() => {
-                const originalHTML = btnElement.innerHTML;
-                btnElement.innerHTML = '✅ 已复制';
-                setTimeout(() => btnElement.innerHTML = originalHTML, 1500);
-            }).catch(() => alert('复制失败，请长按复制'));
-        }
-
-        function saveData() { localStorage.setItem('mySitesV11', JSON.stringify(sites)); }
-
-        function openModal() {
-            isEditing = false;
-            document.getElementById('modalTitle').innerText = '添加新站点';
-            document.getElementById('editId').value = '';
-            document.getElementById('siteName').value = '';
-            document.getElementById('siteUrl').value = '';
-            document.getElementById('supportSign').value = '是';
-            document.getElementById('isSigned').value = '否';
-            document.getElementById('signCondition').value = '';
-            document.getElementById('balance').value = '';
-            document.getElementById('customUrl').value = '';
-            document.getElementById('accountUser').value = '';
-            document.getElementById('accountPass').value = '';
-            document.getElementById('qqGroup').value = '';
-            document.getElementById('remark').value = '';
-            
-            document.getElementById('hasRecharge').value = '否';
-            document.getElementById('rechargeDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('rechargeAmount').value = '';
-            toggleRechargeOptions();
-
-            document.getElementById('modelContainer').innerHTML = '';
-            addModelInput();
-            toggleSignOptions(); 
-            document.getElementById('formModal').style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('formModal').style.display = 'none'; }
-
-        function saveSite() {
-            const name = document.getElementById('siteName').value.trim();
-            if (!name) return alert('站点名称不能为空哦！');
-
-            const modelNames = document.querySelectorAll('.model-name-input');
-            const modelPrices = document.querySelectorAll('.model-price-input');
-            let foodModels = [];
-            for (let i = 0; i < modelNames.length; i++) {
-                const mName = modelNames[i].value.trim();
-                const mPrice = modelPrices[i].value.trim();
-                if (mName || mPrice) foodModels.push({ name: mName || '未命名', price: mPrice });
-            }
-
-            const siteData = {
-                name: name,
-                url: document.getElementById('siteUrl').value.trim(),
-                supportSign: document.getElementById('supportSign').value,
-                isSigned: document.getElementById('isSigned').value,
-                condition: document.getElementById('signCondition').value.trim(),
-                balance: document.getElementById('balance').value.trim(),
-                hasRecharge: document.getElementById('hasRecharge').value,
-                rechargeDate: document.getElementById('rechargeDate').value,
-                rechargeAmount: document.getElementById('rechargeAmount').value.trim(),
-                customUrl: document.getElementById('customUrl').value.trim(),
-                accountUser: document.getElementById('accountUser').value.trim(),
-                accountPass: document.getElementById('accountPass').value.trim(),
-                qqGroup: document.getElementById('qqGroup').value.trim(),
-                foodModels: foodModels,
-                remark: document.getElementById('remark').value.trim(),
-                isCollapsed: isEditing ? sites[document.getElementById('editId').value].isCollapsed : false 
-            };
-
-            if (isEditing) sites[document.getElementById('editId').value] = siteData;
-            else sites.push(siteData);
-
-            saveData(); closeModal(); renderSites();
-        }
-
-        function editSite(index) {
-            isEditing = true;
-            const site = sites[index];
-            
-            document.getElementById('modalTitle').innerText = '编辑站点';
-            document.getElementById('editId').value = index;
-            document.getElementById('siteName').value = site.name;
-            document.getElementById('siteUrl').value = site.url || '';
-            document.getElementById('supportSign').value = site.supportSign || '是';
-            document.getElementById('isSigned').value = site.isSigned || '否';
-            document.getElementById('signCondition').value = site.condition || '';
-            document.getElementById('balance').value = site.balance || '';
-            document.getElementById('customUrl').value = site.customUrl || '';
-            document.getElementById('accountUser').value = site.accountUser || '';
-            document.getElementById('accountPass').value = site.accountPass || '';
-            document.getElementById('qqGroup').value = site.qqGroup || '';
-            document.getElementById('remark').value = site.remark || '';
-            
-            document.getElementById('hasRecharge').value = site.hasRecharge || '否';
-            document.getElementById('rechargeDate').value = site.rechargeDate || '';
-            document.getElementById('rechargeAmount').value = site.rechargeAmount || '';
-            toggleRechargeOptions();
-
-            document.getElementById('modelContainer').innerHTML = '';
-            if (site.foodModels && site.foodModels.length > 0) site.foodModels.forEach(m => addModelInput(m.name, m.price));
-            else addModelInput();
-            
-            toggleSignOptions();
-            document.getElementById('formModal').style.display = 'flex';
-        }
-
-        function deleteSite(index) {
-            if (confirm('确定要删除这个站点吗？')) {
-                sites.splice(index, 1); saveData(); renderSites();
-            }
-        }
-
-        renderSites();
-    </script>
+function delS(i){if(confirm('确定删除？')){sites.splice(i,1);sd();rs()}}
+rs();
+</script>
 </body>
 </html>
