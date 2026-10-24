@@ -5,98 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>qiuqiuのapi 🍎🍏</title>
 <style>
-:root { --g: #52c41a; --gl: #f6ffed; --r: #ff4d4f; --rl: #fff1f0; --y: #faad14; --yl: #fffbe6; --b: #12b7f5; --bl: #e6f7ff; --t: #333; --tl: #888; --bg: #f7f9f7; --cbg: #fff; }
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
-body { background-color: var(--bg); background-image: radial-gradient(circle at 0% 0%, rgba(82,196,26,0.1) 0%, transparent 40%), radial-gradient(circle at 100% 100%, rgba(255,77,79,0.1) 0%, transparent 40%); background-attachment: fixed; color: var(--t); padding: 15px; padding-bottom: 100px; min-height: 100vh; }
-.top-bar { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #fff; }
-h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); margin-bottom: 10px; }
-.dashboard { display: flex; justify-content: space-around; text-align: center; font-size: 12px; color: var(--tl); }
-.dashboard span { display: block; font-size: 16px; font-weight: bold; color: var(--t); margin-top: 2px; }
-.dashboard .gt { color: var(--g); }
-.toolbar { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-.search-box { flex: 1; min-width: 120px; position: relative; }
-.search-box input { width: 100%; padding: 10px 15px 10px 35px; border-radius: 12px; border: 1px solid #e0e0e0; background: white; font-size: 14px; outline: none; }
-.search-box::before { content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; }
-.btn-f, .btn-r, .btn-s { padding: 10px 15px; border-radius: 12px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; background: white; color: var(--t); border: 1px solid #e0e0e0; transition: all 0.2s; white-space: nowrap; }
-.btn-f.ag { background: var(--g); color: white; border-color: var(--g); }
-.btn-f.ay { background: var(--y); color: white; border-color: var(--y); }
-.btn-r { background: var(--rl); color: var(--r); border-color: #ffccc7; }
-.btn-s { background: #f0f5ff; color: #2f54eb; border-color: #adc6ff; }
-.btn-f:active, .btn-r:active, .btn-s:active { transform: scale(0.95); }
-.fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--r); color: white; font-size: 30px; line-height: 60px; text-align: center; box-shadow: 0 6px 16px rgba(255,77,79,0.4); border: 3px solid white; cursor: pointer; z-index: 99; transition: transform 0.2s; }
-.fab:active { transform: scale(0.9); }
-.card { background: var(--cbg); border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; overflow: hidden; position: relative; transition: all 0.3s ease; }
-.card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--g); transition: background 0.3s; }
-.card.uc::before { background: var(--r); }
-.card-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 18px 25px; cursor: pointer; user-select: none; }
-.site-name { font-size: 18px; font-weight: 800; color: #222; }
-.toggle-icon { font-size: 22px; }
-.card-body { padding: 0 20px 20px 25px; display: block; }
-.card.collapsed .card-body { display: none; }
-.link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 12px;}
-.site-link { font-size: 13px; color: var(--g); text-decoration: none; background: var(--gl); padding: 6px 12px; border-radius: 8px; font-weight: bold; }
-.btn-copy { background: #f5f5f5; border: 1px solid #e0e0e0; color: #666; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-.info-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 10px; }
-.info-label { color: var(--tl); font-size: 13px; font-weight: bold; }
-.balance { color: var(--r); font-weight: 900; font-size: 18px; }
-.switch-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.switch-text { font-size: 13px; font-weight: bold; }
-.switch-text.un { color: var(--r); }
-.switch-text.si { color: var(--g); }
-.toggle-switch { position: relative; width: 44px; height: 24px; background-color: #ddd; border-radius: 24px; transition: 0.3s; }
-.toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-.toggle-switch.active { background-color: var(--g); }
-.toggle-switch.active::after { transform: translateX(20px); }
-
-/* 充值记录区域升级 */
-.recharge-box { background: var(--yl); border: 1px solid #ffe58f; border-radius: 12px; padding: 12px; margin-bottom: 12px; font-size: 13px; color: #d48806; }
-.recharge-title { font-weight: bold; margin-bottom: 6px; border-bottom: 1px dashed #ffe58f; padding-bottom: 6px; display: flex; justify-content: space-between;}
-.recharge-list { display: flex; flex-direction: column; gap: 4px; }
-.recharge-item { display: flex; justify-content: space-between; font-size: 12px; color: #b07a00;}
-.recharge-total { font-weight: bold; color: var(--r); font-size: 14px; }
-
-.url-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.url-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-.url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
-.url-text { font-size: 12px; color: #555; word-break: break-all; font-family: monospace;}
-.auth-box { background: #f9f0ff; border: 1px dashed #d3adf7; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
-.auth-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.auth-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-.auth-label { font-size: 11px; color: #722ed1; font-weight: bold; margin-bottom: 2px; }
-.auth-text { font-size: 13px; color: #391085; word-break: break-all; font-family: monospace; font-weight: bold;}
-.btn-eye { background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0 5px; }
-.qq-box { background: var(--bl); border: 1px dashed #91d5ff; border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.qq-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-.qq-label { font-size: 11px; color: var(--b); font-weight: bold; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;}
-.qq-text { font-size: 14px; color: #0050b3; font-weight: bold; font-family: monospace;}
-.model-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-.model-item { background: var(--gl); border: 1px solid #b7eb8f; border-radius: 10px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-.model-name { font-size: 13px; color: #389e0d; font-weight: bold; }
-.model-price { font-size: 12px; color: white; font-weight: bold; background: var(--g); padding: 2px 8px; border-radius: 6px; }
-.remark-box { background: #fcfcfc; border: 1px dashed #ddd; border-radius: 12px; padding: 10px; margin-bottom: 12px; }
-.remark-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 4px; }
-.remark-text { font-size: 12px; color: #666; line-height: 1.5; word-break: break-all; }
-.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-.btn-small { background: white; border: 1px solid #ddd; color: #666; padding: 6px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
-.btn-edit { border-color: var(--g); color: var(--g); }
-.btn-delete { border-color: var(--r); color: var(--r); }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: flex-end; }
-.modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; padding: 25px; overflow-y: auto; animation: slideUp 0.3s; }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; font-weight: bold; }
-.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; background: #fafafa; }
-.form-group input:focus { border-color: var(--g); background: white; }
-.dynamic-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center;}
-.input-model { flex: 2; }
-.input-price { flex: 1; }
-.btn-remove-model { background: var(--rl); color: var(--r); border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; height: 42px; }
-.btn-add-model { background: var(--gl); color: var(--g); border: 1px dashed var(--g); padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 15px;}
-.modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-.btn-cancel { flex: 1; background: #f5f5f5; color: #666; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
-.btn-save { flex: 2; background: var(--g); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
-.empty-state { text-align: center; color: #999; margin-top: 50px; font-size: 14px; }
-.hidden { display: none !important; }
+:root{--g:#52c41a;--gl:#f6ffed;--r:#ff4d4f;--rl:#fff1f0;--y:#faad14;--yl:#fffbe6;--b:#12b7f5;--bl:#e6f7ff;--t:#333;--tl:#888;--bg:#f7f9f7;--cbg:#fff}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+body{background:var(--bg);background-image:radial-gradient(circle at 0% 0%,rgba(82,196,26,.1) 0,transparent 40%),radial-gradient(circle at 100% 100%,rgba(255,77,79,.1) 0,transparent 40%);background-attachment:fixed;color:var(--t);padding:15px;padding-bottom:100px;min-height:100vh}
+.top-bar{background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-radius:20px;padding:15px;margin-bottom:15px;box-shadow:0 4px 12px rgba(0,0,0,.03);border:1px solid #fff}
+h1{font-size:22px;font-weight:900;text-align:center;color:var(--r);margin-bottom:10px}
+.dashboard{display:flex;justify-content:space-around;text-align:center;font-size:12px;color:var(--tl)}
+.dashboard span{display:block;font-size:16px;font-weight:bold;color:var(--t);margin-top:2px}
+.dashboard .gt{color:var(--g)}
+.toolbar{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.search-box{flex:1;min-width:120px;position:relative}
+.search-box input{width:100%;padding:10px 15px 10px 35px;border-radius:12px;border:1px solid #e0e0e0;background:#fff;font-size:14px;outline:none}
+.search-box::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px}
+.btn-f,.btn-r,.btn-s{padding:10px 15px;border-radius:12px;font-size:13px;font-weight:bold;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;background:#fff;color:var(--t);border:1px solid #e0e0e0;transition:all .2s;white-space:nowrap}
+.btn-f.ag{background:var(--g);color:#fff;border-color:var(--g)}
+.btn-f.ay{background:var(--y);color:#fff;border-color:var(--y)}
+.btn-r{background:var(--rl);color:var(--r);border-color:#ffccc7}
+.btn-s{background:#f0f5ff;color:#2f54eb;border-color:#adc6ff}
+.btn-f:active,.btn-r:active,.btn-s:active{transform:scale(.95)}
+.fab{position:fixed;bottom:30px;right:20px;width:60px;height:60px;border-radius:50%;background:var(--r);color:#fff;font-size:30px;line-height:60px;text-align:center;box-shadow:0 6px 16px rgba(255,77,79,.4);border:3px solid #fff;cursor:pointer;z-index:99;transition:transform .2s}
+.fab:active{transform:scale(.9)}
+.card{background:var(--cbg);border-radius:20px;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,.04);border:1px solid #f0f0f0;overflow:hidden;position:relative;transition:transform .2s,opacity .2s,box-shadow .2s}
+.card::before{content:'';position:absolute;top:0;left:0;width:6px;height:100%;background:var(--g);transition:background .3s}
+.card.uc::before{background:var(--r)}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 18px 25px;cursor:grab;user-select:none}
+.site-name{font-size:18px;font-weight:800;color:#222}
+.toggle-icon{font-size:22px}
+.card-body{padding:0 20px 20px 25px;display:block}
+.card.collapsed .card-body{display:none}
+.link-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;border-bottom:1px dashed #eee;padding-bottom:12px}
+.site-link{font-size:13px;color:var(--g);text-decoration:none;background:var(--gl);padding:6px 12px;border-radius:8px;font-weight:bold}
+.btn-copy{background:#f5f5f5;border:1px solid #e0e0e0;color:#666;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap}
+.info-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:10px}
+.info-label{color:var(--tl);font-size:13px;font-weight:bold}
+.balance{color:var(--r);font-weight:900;font-size:18px}
+.switch-container{display:flex;align-items:center;gap:8px;cursor:pointer}
+.switch-text{font-size:13px;font-weight:bold}
+.switch-text.un{color:var(--r)}
+.switch-text.si{color:var(--g)}
+.toggle-switch{position:relative;width:44px;height:24px;background-color:#ddd;border-radius:24px;transition:.3s}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background-color:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.toggle-switch.active{background-color:var(--g)}
+.toggle-switch.active::after{transform:translateX(20px)}
+.recharge-box{background:var(--yl);border:1px solid #ffe58f;border-radius:12px;padding:12px;margin-bottom:12px;font-size:13px;color:#d48806}
+.recharge-title{font-weight:bold;margin-bottom:6px;border-bottom:1px dashed #ffe58f;padding-bottom:6px;display:flex;justify-content:space-between}
+.recharge-list{display:flex;flex-direction:column;gap:4px}
+.recharge-item{display:flex;justify-content:space-between;font-size:12px;color:#b07a00}
+.recharge-total{font-weight:bold;color:var(--r);font-size:14px}
+.url-box{background:#fafafa;border:1px solid #eee;border-radius:12px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.url-info{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}
+.url-label{font-size:11px;color:#999;font-weight:bold;margin-bottom:2px}
+.url-text{font-size:12px;color:#555;word-break:break-all;font-family:monospace}
+.auth-box{background:#f9f0ff;border:1px dashed #d3adf7;border-radius:12px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px}
+.auth-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.auth-info{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}
+.auth-label{font-size:11px;color:#722ed1;font-weight:bold;margin-bottom:2px}
+.auth-text{font-size:13px;color:#391085;word-break:break-all;font-family:monospace;font-weight:bold}
+.btn-eye{background:transparent;border:none;font-size:16px;cursor:pointer;padding:0 5px}
+.qq-box{background:var(--bl);border:1px dashed #91d5ff;border-radius:12px;padding:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.qq-info{display:flex;flex-direction:column;flex-grow:1;overflow:hidden}
+.qq-label{font-size:11px;color:var(--b);font-weight:bold;margin-bottom:2px;display:flex;align-items:center;gap:4px}
+.qq-text{font-size:14px;color:#0050b3;font-weight:bold;font-family:monospace}
+.model-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.model-item{background:var(--gl);border:1px solid #b7eb8f;border-radius:10px;padding:10px;display:flex;justify-content:space-between;align-items:center}
+.model-name{font-size:13px;color:#389e0d;font-weight:bold}
+.model-price{font-size:12px;color:#fff;font-weight:bold;background:var(--g);padding:2px 8px;border-radius:6px}
+.remark-box{background:#fcfcfc;border:1px dashed #ddd;border-radius:12px;padding:10px;margin-bottom:12px}
+.remark-label{font-size:11px;color:#999;font-weight:bold;margin-bottom:4px}
+.remark-text{font-size:12px;color:#666;line-height:1.5;word-break:break-all}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
+.btn-small{background:#fff;border:1px solid #ddd;color:#666;padding:6px 16px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer}
+.btn-edit{border-color:var(--g);color:var(--g)}
+.btn-delete{border-color:var(--r);color:var(--r)}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:100;justify-content:center;align-items:flex-end}
+.modal-content{background:#fff;width:100%;max-height:90vh;border-radius:24px 24px 0 0;padding:25px;overflow-y:auto;animation:slideUp .3s}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:13px;color:#666;margin-bottom:6px;font-weight:bold}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;outline:none;background:#fafafa}
+.form-group input:focus{border-color:var(--g);background:#fff}
+.dynamic-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.input-model{flex:2}
+.input-price{flex:1}
+.btn-remove-model{background:var(--rl);color:var(--r);border:none;padding:0 15px;border-radius:10px;font-weight:bold;cursor:pointer;height:42px}
+.btn-add-model{background:var(--gl);color:var(--g);border:1px dashed var(--g);padding:10px;border-radius:10px;font-size:13px;font-weight:bold;width:100%;cursor:pointer;margin-bottom:15px}
+.modal-actions{display:flex;gap:12px;margin-top:20px}
+.btn-cancel{flex:1;background:#f5f5f5;color:#666;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:bold}
+.btn-save{flex:2;background:var(--g);color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:bold}
+.empty-state{text-align:center;color:#999;margin-top:50px;font-size:14px}
+.hidden{display:none!important}
+.dragging{opacity:.5;transform:scale(1.02);box-shadow:0 10px 25px rgba(0,0,0,.15);border:2px dashed var(--g)}
 </style>
 </head>
 <body>
@@ -116,20 +114,22 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 <h2 style="margin-bottom:20px;text-align:center;color:#2f54eb">☁️ 数据备份与恢复</h2>
 <div class="form-group" style="border-bottom:2px dashed #eee;padding-bottom:20px">
 <label style="color:#1890ff;font-size:15px">📤 导出数据</label>
-<p style="font-size:12px;color:#999;margin-bottom:10px">下载为文件最安全！</p>
-<button type="button" class="btn-add-model" style="background:#e6f7ff;border-color:#91d5ff;color:#1890ff" onclick="expFile()">💾 下载备份文件 (.json)</button>
+<p style="font-size:12px;color:#999;margin-bottom:10px">可以只导出今天新增的站点！</p>
+<button type="button" class="btn-add-model" style="background:#e6f7ff;border-color:#91d5ff;color:#1890ff" onclick="expFile('all')">💾 下载全部文件</button>
+<button type="button" class="btn-add-model" style="background:#f6ffed;border-color:#b7eb8f;color:#389e0d" onclick="expFile('today')">✨ 只下载今天新增的</button>
 <label style="margin-top:15px">或者：复制文本</label>
-<textarea id="expTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="生成文本..."></textarea>
-<button type="button" class="btn-copy" style="width:100%;padding:10px" onclick="expTxt()">📋 生成并复制文本</button>
+<textarea id="expTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="生成的文本会显示在这里..."></textarea>
+<button type="button" class="btn-copy" style="width:100%;padding:10px;margin-bottom:5px;background:#e6f7ff;border-color:#91d5ff;color:#1890ff" onclick="expTxt('all')">📋 复制全部文本</button>
+<button type="button" class="btn-copy" style="width:100%;padding:10px;background:#f6ffed;border-color:#b7eb8f;color:#389e0d" onclick="expTxt('today')">📋 复制今天新增文本</button>
 </div>
 <div class="form-group" style="padding-top:10px">
-<label style="color:var(--g);font-size:15px">📥 导入数据</label>
-<p style="font-size:12px;color:#999;margin-bottom:10px">选择文件或粘贴文本。</p>
+<label style="color:var(--g);font-size:15px">📥 导入数据（自动合并追加）</label>
+<p style="font-size:12px;color:#999;margin-bottom:10px">导入只会把新数据加进去，绝不影响已有数据。</p>
 <input type="file" id="impFile" accept=".json" style="display:none" onchange="impFile(event)">
-<button type="button" class="btn-add-model" style="background:white;border-color:var(--g);color:var(--g)" onclick="document.getElementById('impFile').click()">📂 选择文件上传</button>
+<button type="button" class="btn-add-model" style="background:white;border-color:var(--g);color:var(--g)" onclick="document.getElementById('impFile').click()">📂 选择文件上传合并</button>
 <label style="margin-top:15px">或者：粘贴文本导入</label>
-<textarea id="impTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="粘贴备份文本..."></textarea>
-<button type="button" class="btn-add-model" style="background:var(--g);border-color:var(--g);color:white" onclick="impTxt()">✅ 确认导入并覆盖</button>
+<textarea id="impTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="在此粘贴刚才复制的文本..."></textarea>
+<button type="button" class="btn-add-model" style="background:var(--g);border-color:var(--g);color:white" onclick="impTxt()">✅ 确认导入合并</button>
 </div>
 <div class="modal-actions"><button class="btn-cancel" onclick="closeSync()">关闭</button></div>
 </div>
@@ -146,7 +146,6 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 <div id="cg" class="form-group"><label>签到条件</label><input type="text" id="sc" placeholder="例如：需满10元"></div>
 <div class="form-group"><label>当前余额</label><input type="text" id="bal" placeholder="例如：25.5"></div>
 
-<!-- 充值记录动态添加 -->
 <div class="form-group" style="background:var(--yl);padding:15px;border-radius:12px;border:1px solid #ffe58f">
 <label style="color:#d48806">💰 充值记录流水</label>
 <div id="rc"></div>
@@ -174,40 +173,87 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 </div>
 
 <script>
-let sites = JSON.parse(localStorage.getItem('mySitesV12')) || [];
-let isEditing = false, currentFilter = 'none', searchKeyword = '';
+let lastVisit = localStorage.getItem('lastVisitDate');
+let today = new Date().toLocaleDateString();
+let sites = JSON.parse(localStorage.getItem('mySitesV16')) || [];
+
+if (lastVisit !== today) {
+    if (sites.length > 0) { sites.forEach(s => { if(s.supportSign === '是') s.isSigned = '否'; }); localStorage.setItem('mySitesV16', JSON.stringify(sites)); }
+    localStorage.setItem('lastVisitDate', today);
+}
+
+let isEditing = false, currentFilter = 'none', searchKeyword = '', draggedIndex = null;
 
 function openSync() { document.getElementById('expTxt').value=''; document.getElementById('impTxt').value=''; document.getElementById('impFile').value=''; document.getElementById('syncModal').style.display='flex'; }
 function closeSync() { document.getElementById('syncModal').style.display='none'; }
-function expFile() { if(!sites.length) return alert('无数据'); const b=new Blob([JSON.stringify(sites,null,2)],{type:"application/json"}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`qiuqiu_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u); }
-function expTxt() { if(!sites.length) return alert('无数据'); const s=JSON.stringify(sites); document.getElementById('expTxt').value=s; navigator.clipboard.writeText(s).then(()=>alert('✅ 已复制')).catch(()=>alert('请手动复制')); }
-function impFile(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(e){ try{ const d=JSON.parse(e.target.result); if(!Array.isArray(d)) throw 0; if(confirm('覆盖当前数据？')){ sites=d; sd(); rs(); closeSync(); alert('🎉 导入成功'); } }catch(err){ alert('❌ 格式错误'); } }; r.readAsText(f); }
-function impTxt() { const s=document.getElementById('impTxt').value.trim(); if(!s)return alert('请粘贴'); try{ const d=JSON.parse(s); if(!Array.isArray(d)) throw 0; if(confirm('覆盖当前数据？')){ sites=d; sd(); rs(); closeSync(); alert('🎉 导入成功'); } }catch(e){ alert('❌ 格式错误'); } }
+
+function expFile(mode) {
+    if(!sites.length) return alert('无数据');
+    let dataToExport = sites;
+    if (mode === 'today') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        dataToExport = sites.filter(s => s.createDate === todayStr);
+        if (dataToExport.length === 0) return alert('今天还没有新增站点哦~');
+    }
+    const b=new Blob([JSON.stringify(dataToExport,null,2)],{type:"application/json"}); 
+    const u=URL.createObjectURL(b); 
+    const a=document.createElement('a'); 
+    a.href=u; 
+    a.download=`qiuqiu_backup_${mode}_${new Date().toISOString().slice(0,10)}.json`; 
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u); 
+}
+
+// 新增文本复制功能
+function expTxt(mode) { 
+    if(!sites.length) return alert('无数据'); 
+    let dataToExport = sites;
+    if (mode === 'today') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        dataToExport = sites.filter(s => s.createDate === todayStr);
+        if (dataToExport.length === 0) return alert('今天还没有新增站点哦~');
+    }
+    const s=JSON.stringify(dataToExport); 
+    document.getElementById('expTxt').value=s; 
+    navigator.clipboard.writeText(s).then(()=>alert('✅ 已复制到剪贴板')).catch(()=>alert('请手动长按上方文本框复制')); 
+}
+
+function processImportData(parsedData) {
+    if (!Array.isArray(parsedData)) { alert('❌ 导入失败：数据格式不正确'); return; }
+    if (parsedData.length === 0) { alert('⚠️ 导入的文件里没有数据'); return; }
+    sites = sites.concat(parsedData);
+    alert(`🎉 合并成功！追加了 ${parsedData.length} 个站点，当前共 ${sites.length} 个站点。`);
+    sd(); rs(); closeSync();
+}
+
+function impFile(e) { 
+    const f=e.target.files[0]; if(!f)return; 
+    const r=new FileReader(); 
+    r.onload=function(e){ try{ processImportData(JSON.parse(e.target.result)); }catch(err){ alert('❌ 导入失败：文件解析错误'); } }; 
+    r.readAsText(f); 
+}
+function impTxt() { 
+    const s=document.getElementById('impTxt').value.trim(); if(!s)return alert('请先粘贴数据'); 
+    try{ processImportData(JSON.parse(s)); }catch(e){ alert('❌ 导入失败：文本格式错误'); } 
+}
 
 function ud() { let tb=0, tu=0; sites.forEach(s=>{ const b=parseFloat(s.balance); if(!isNaN(b)) tb+=b; if(s.supportSign==='是'&&s.isSigned==='否') tu++; }); document.getElementById('tb').innerText=tb.toFixed(1); document.getElementById('ts').innerText=sites.length; document.getElementById('tu').innerText=tu; }
 function tf(t) { currentFilter = (currentFilter===t)?'none':t; document.getElementById('fu').className = currentFilter==='unsign'?'btn-f ag':'btn-f'; document.getElementById('fr').className = currentFilter==='recharge'?'btn-f ay':'btn-f'; rs(); }
 function resSigns() { if(confirm('重置所有签到状态？')){ sites.forEach(s=>{ if(s.supportSign==='是') s.isSigned='否'; }); sd(); rs(); } }
 function tso() { const v=document.getElementById('ss').value==='是'; document.getElementById('sd').classList.toggle('hidden',!v); document.getElementById('cg').classList.toggle('hidden',!v); }
 function addM(n='',p='') { const c=document.getElementById('mc'); const d=document.createElement('div'); d.className='dynamic-row'; d.innerHTML=`<input type="text" class="input-model mn" value="${n}" placeholder="名称"><input type="text" class="input-price mp" value="${p}" placeholder="价格"><button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>`; c.appendChild(d); }
-
-// 新增动态添加充值记录
 function addR(date = '', amount = '') {
-    const c = document.getElementById('rc');
-    const d = document.createElement('div');
-    d.className = 'dynamic-row';
-    // 如果没传日期，默认今天
+    const c = document.getElementById('rc'); const d = document.createElement('div'); d.className = 'dynamic-row';
     const defaultDate = date || new Date().toISOString().split('T')[0];
     d.innerHTML = `<input type="date" class="input-model r-date" value="${defaultDate}"><input type="text" class="input-price r-amount" value="${amount}" placeholder="金额"><button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>`;
     c.appendChild(d);
 }
-
 function tp(i) { const p=document.getElementById('p'+i), e=document.getElementById('e'+i); if(p.innerText==='••••••'){ p.innerText=sites[i].accountPass; e.innerText='🙈'; }else{ p.innerText='••••••'; e.innerText='👁️'; } }
 
 function rs() {
 const l=document.getElementById('sl'); l.innerHTML=''; searchKeyword=document.getElementById('si').value.toLowerCase();
 sites.forEach((site,index)=>{
 if(currentFilter==='unsign'&&!(site.supportSign==='是'&&site.isSigned==='否'))return;
-if(currentFilter==='recharge'&&!(site.recharges&&site.recharges.length>0))return; // 筛选有流水的站点
+if(currentFilter==='recharge'&&!(site.recharges&&site.recharges.length>0))return;
 let sc=site.name+(site.remark||'')+(site.customUrl||'')+(site.qqGroup||'')+(site.accountUser||'');
 if(site.foodModels)site.foodModels.forEach(m=>{sc+=(m.name+m.price)});
 if(searchKeyword&&!sc.toLowerCase().includes(searchKeyword))return;
@@ -217,8 +263,6 @@ let mh=''; if(site.foodModels&&site.foodModels.length>0){const ms=site.foodModel
 let uh=site.customUrl?`<div class="url-box"><div class="url-info"><div class="url-label">专属 URL</div><div class="url-text">${site.customUrl}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.customUrl}',this)">📋 复制</button></div>`:'';
 let ah=(site.accountUser||site.accountPass)?`<div class="auth-box">${site.accountUser?`<div class="auth-row"><div class="auth-info"><div class="auth-label">🔑 用户名</div><div class="auth-text">${site.accountUser}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.accountUser}',this)">📋 复制</button></div>`:''}${site.accountPass?`<div class="auth-row"><div class="auth-info"><div class="auth-label">🔒 密码</div><div class="auth-text" id="p${index}">••••••</div></div><button class="btn-eye" id="e${index}" onclick="event.stopPropagation();tp(${index})">👁️</button><button class="btn-copy" onclick="event.stopPropagation();cp('${site.accountPass}',this)">📋 复制</button></div>`:''}</div>`:'';
 let qh=site.qqGroup?`<div class="qq-box"><div class="qq-info"><div class="qq-label">🐧 官方QQ群</div><div class="qq-text">${site.qqGroup}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.qqGroup}',this)">📋 复制群号</button></div>`:'';
-
-// 充值记录渲染
 let rh = '';
 if (site.recharges && site.recharges.length > 0) {
     let total = 0;
@@ -227,43 +271,59 @@ if (site.recharges && site.recharges.length > 0) {
         if (!isNaN(amt)) total += amt;
         return `<div class="recharge-item"><span>${r.date || '未知'}</span><span>+${r.amount || 0}</span></div>`;
     }).join('');
-    
-    rh = `<div class="recharge-box">
-        <div class="recharge-title"><span>💰 充值流水</span><span class="recharge-total">总计: ${total.toFixed(1)}</span></div>
-        <div class="recharge-list">${listItems}</div>
-    </div>`;
+    rh = `<div class="recharge-box"><div class="recharge-title"><span>💰 充值流水</span><span class="recharge-total">总计: ${total.toFixed(1)}</span></div><div class="recharge-list">${listItems}</div></div>`;
 }
-
 let rkh=site.remark?`<div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>`:'';
 const c=document.createElement('div'); const ic=site.isCollapsed?'collapsed':''; const cc=(site.supportSign==='是'&&site.isSigned==='否')?'uc':''; c.className=`card ${ic} ${cc}`;
+
+c.setAttribute('draggable', 'true');
+c.setAttribute('data-index', index);
+c.addEventListener('dragstart', handleDragStart);
+c.addEventListener('dragover', handleDragOver);
+c.addEventListener('drop', handleDrop);
+c.addEventListener('dragend', handleDragEnd);
+
 c.innerHTML=`<div class="card-header" onclick="togC(${index})"><div class="site-name">${site.name}</div><div class="toggle-icon">${ic?'🍎':'🍏'}</div></div><div class="card-body"><div class="link-row">${site.url?`<a href="${site.url.startsWith('http')?site.url:'https://'+site.url}" target="_blank" class="site-link">🔗 访问</a><button class="btn-copy" onclick="event.stopPropagation();cp('${site.url}',this)">📋 复制</button>`:''}</div>${sh}<div class="info-row"><span class="info-label">当前余额</span><span class="balance">${site.balance||'0'}</span></div>${rh}${uh}${ah}${qh}${mh}${rkh}<div class="actions"><button class="btn-small btn-edit" onclick="event.stopPropagation();edS(${index})">编辑</button><button class="btn-small btn-delete" onclick="event.stopPropagation();delS(${index})">删除</button></div></div>`;
 l.appendChild(c); });
 if(l.innerHTML==='')l.innerHTML='<div class="empty-state">没有符合条件的站点~</div>'; ud(); }
 
+function handleDragStart(e) { draggedIndex = this.getAttribute('data-index'); this.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedIndex); }
+function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function handleDrop(e) {
+    e.preventDefault();
+    const targetCard = e.target.closest('.card');
+    if (targetCard && draggedIndex !== null) {
+        const targetIndex = targetCard.getAttribute('data-index');
+        if (draggedIndex !== targetIndex) {
+            const draggedItem = sites[draggedIndex];
+            sites.splice(draggedIndex, 1);
+            sites.splice(targetIndex, 0, draggedItem);
+            sd(); rs();
+        }
+    }
+}
+function handleDragEnd(e) { document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging')); draggedIndex = null; }
+
 function togS(i){sites[i].isSigned=sites[i].isSigned==='是'?'否':'是';sd();rs();}
 function togC(i){sites[i].isCollapsed=!sites[i].isCollapsed;sd();rs();}
 function cp(t,b){let s=t.startsWith('http')||!t.includes('.')?t:'https://'+t;navigator.clipboard.writeText(s).then(()=>{const o=b.innerHTML;b.innerHTML='✅ 已复制';setTimeout(()=>b.innerHTML=o,1500)}).catch(()=>alert('复制失败'))}
-function sd(){localStorage.setItem('mySitesV12',JSON.stringify(sites))}
+function sd(){localStorage.setItem('mySitesV16',JSON.stringify(sites))}
 
 function openForm(){
 isEditing=false;document.getElementById('mt').innerText='添加新站点';document.getElementById('eid').value='';
 document.getElementById('sn').value='';document.getElementById('su').value='';document.getElementById('ss').value='是';
 document.getElementById('is').value='否';document.getElementById('sc').value='';document.getElementById('bal').value='';
 document.getElementById('cu').value='';document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('qg').value='';document.getElementById('rm').value='';
-
-document.getElementById('rc').innerHTML=''; // 清空充值流水
+document.getElementById('rc').innerHTML='';
 document.getElementById('mc').innerHTML='';addM();tso();document.getElementById('formModal').style.display='flex'
 }
 function closeForm(){document.getElementById('formModal').style.display='none'}
 
 function saveSite(){
 const n=document.getElementById('sn').value.trim();if(!n)return alert('名称不能为空');
-
-// 获取模型
 const mns=document.querySelectorAll('.mn'), mps=document.querySelectorAll('.mp'), fms=[];
 for(let i=0;i<mns.length;i++){const mn=mns[i].value.trim(),mp=mps[i].value.trim();if(mn||mp)fms.push({name:mn||'未命名',price:mp})}
 
-// 获取充值记录
 const rds = document.querySelectorAll('.r-date'), ras = document.querySelectorAll('.r-amount'), rcs = [];
 for (let i = 0; i < rds.length; i++) {
     const d = rds[i].value.trim();
@@ -274,11 +334,12 @@ for (let i = 0; i < rds.length; i++) {
 const d={
     name:n, url:document.getElementById('su').value.trim(), supportSign:document.getElementById('ss').value,
     isSigned:document.getElementById('is').value, condition:document.getElementById('sc').value.trim(),
-    balance:document.getElementById('bal').value.trim(), recharges:rcs, // 保存多笔充值
+    balance:document.getElementById('bal').value.trim(), recharges:rcs,
     customUrl:document.getElementById('cu').value.trim(), accountUser:document.getElementById('au').value.trim(),
     accountPass:document.getElementById('ap').value.trim(), qqGroup:document.getElementById('qg').value.trim(),
     foodModels:fms, remark:document.getElementById('rm').value.trim(),
-    isCollapsed:isEditing?sites[document.getElementById('eid').value].isCollapsed:false
+    isCollapsed:isEditing?sites[document.getElementById('eid').value].isCollapsed:false,
+    createDate: isEditing ? sites[document.getElementById('eid').value].createDate : new Date().toISOString().split('T')[0]
 };
 if(isEditing)sites[document.getElementById('eid').value]=d;else sites.push(d);
 sd();closeForm();rs();
@@ -291,12 +352,10 @@ document.getElementById('sn').value=s.name;document.getElementById('su').value=s
 document.getElementById('is').value=s.isSigned||'否';document.getElementById('sc').value=s.condition||'';document.getElementById('bal').value=s.balance||'';
 document.getElementById('cu').value=s.customUrl||'';document.getElementById('au').value=s.accountUser||'';document.getElementById('ap').value=s.accountPass||'';document.getElementById('qg').value=s.qqGroup||'';document.getElementById('rm').value=s.remark||'';
 
-// 渲染充值记录
 document.getElementById('rc').innerHTML='';
 if (s.recharges && s.recharges.length > 0) {
     s.recharges.forEach(r => addR(r.date, r.amount));
 } else if (s.hasRecharge === '是' && s.rechargeAmount) {
-    // 兼容旧数据：如果之前只有单笔，把它转成第一笔流水
     addR(s.rechargeDate || '', s.rechargeAmount);
 }
 
