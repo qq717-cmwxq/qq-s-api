@@ -25,10 +25,10 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 .btn-f:active, .btn-r:active, .btn-s:active { transform: scale(0.95); }
 .fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--r); color: white; font-size: 30px; line-height: 60px; text-align: center; box-shadow: 0 6px 16px rgba(255,77,79,0.4); border: 3px solid white; cursor: pointer; z-index: 99; transition: transform 0.2s; }
 .fab:active { transform: scale(0.9); }
-.card { background: var(--cbg); border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; overflow: hidden; position: relative; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; }
+.card { background: var(--cbg); border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; overflow: hidden; position: relative; transition: all 0.3s ease; }
 .card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--g); transition: background 0.3s; }
 .card.uc::before { background: var(--r); }
-.card-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 18px 25px; cursor: grab; user-select: none; }
+.card-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 18px 25px; cursor: pointer; user-select: none; }
 .site-name { font-size: 18px; font-weight: 800; color: #222; }
 .toggle-icon { font-size: 22px; }
 .card-body { padding: 0 20px 20px 25px; display: block; }
@@ -47,11 +47,14 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 .toggle-switch.active { background-color: var(--g); }
 .toggle-switch.active::after { transform: translateX(20px); }
+
+/* 充值记录区域升级 */
 .recharge-box { background: var(--yl); border: 1px solid #ffe58f; border-radius: 12px; padding: 12px; margin-bottom: 12px; font-size: 13px; color: #d48806; }
 .recharge-title { font-weight: bold; margin-bottom: 6px; border-bottom: 1px dashed #ffe58f; padding-bottom: 6px; display: flex; justify-content: space-between;}
 .recharge-list { display: flex; flex-direction: column; gap: 4px; }
 .recharge-item { display: flex; justify-content: space-between; font-size: 12px; color: #b07a00;}
 .recharge-total { font-weight: bold; color: var(--r); font-size: 14px; }
+
 .url-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .url-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
 .url-label { font-size: 11px; color: #999; font-weight: bold; margin-bottom: 2px; }
@@ -94,7 +97,6 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 .btn-save { flex: 2; background: var(--g); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; }
 .empty-state { text-align: center; color: #999; margin-top: 50px; font-size: 14px; }
 .hidden { display: none !important; }
-.dragging { opacity: 0.5; transform: scale(1.02); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 2px dashed var(--g); }
 </style>
 </head>
 <body>
@@ -127,7 +129,7 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 <button type="button" class="btn-add-model" style="background:white;border-color:var(--g);color:var(--g)" onclick="document.getElementById('impFile').click()">📂 选择文件上传</button>
 <label style="margin-top:15px">或者：粘贴文本导入</label>
 <textarea id="impTxt" style="min-height:60px;font-family:monospace;font-size:12px;margin-bottom:5px" placeholder="粘贴备份文本..."></textarea>
-<button type="button" class="btn-add-model" style="background:var(--g);border-color:var(--g);color:white" onclick="impTxt()">✅ 确认导入</button>
+<button type="button" class="btn-add-model" style="background:var(--g);border-color:var(--g);color:white" onclick="impTxt()">✅ 确认导入并覆盖</button>
 </div>
 <div class="modal-actions"><button class="btn-cancel" onclick="closeSync()">关闭</button></div>
 </div>
@@ -144,6 +146,7 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 <div id="cg" class="form-group"><label>签到条件</label><input type="text" id="sc" placeholder="例如：需满10元"></div>
 <div class="form-group"><label>当前余额</label><input type="text" id="bal" placeholder="例如：25.5"></div>
 
+<!-- 充值记录动态添加 -->
 <div class="form-group" style="background:var(--yl);padding:15px;border-radius:12px;border:1px solid #ffe58f">
 <label style="color:#d48806">💰 充值记录流水</label>
 <div id="rc"></div>
@@ -171,78 +174,40 @@ h1 { font-size: 22px; font-weight: 900; text-align: center; color: var(--r); mar
 </div>
 
 <script>
-// 跨天自动重置逻辑
-let lastVisit = localStorage.getItem('lastVisitDate');
-let today = new Date().toLocaleDateString();
-let sites = JSON.parse(localStorage.getItem('mySitesV13')) || [];
-
-if (lastVisit !== today) {
-    // 如果是新的一天，把所有签到状态重置为'否'
-    if (sites.length > 0) {
-        sites.forEach(s => { if(s.supportSign === '是') s.isSigned = '否'; });
-        localStorage.setItem('mySitesV13', JSON.stringify(sites));
-    }
-    localStorage.setItem('lastVisitDate', today);
-}
-
+let sites = JSON.parse(localStorage.getItem('mySitesV12')) || [];
 let isEditing = false, currentFilter = 'none', searchKeyword = '';
-let draggedIndex = null;
 
 function openSync() { document.getElementById('expTxt').value=''; document.getElementById('impTxt').value=''; document.getElementById('impFile').value=''; document.getElementById('syncModal').style.display='flex'; }
 function closeSync() { document.getElementById('syncModal').style.display='none'; }
 function expFile() { if(!sites.length) return alert('无数据'); const b=new Blob([JSON.stringify(sites,null,2)],{type:"application/json"}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`qiuqiu_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u); }
 function expTxt() { if(!sites.length) return alert('无数据'); const s=JSON.stringify(sites); document.getElementById('expTxt').value=s; navigator.clipboard.writeText(s).then(()=>alert('✅ 已复制')).catch(()=>alert('请手动复制')); }
-
-function processImportData(parsedData) {
-    if (!Array.isArray(parsedData)) { alert('❌ 导入失败：数据格式不正确'); return; }
-    const isMerge = confirm("请选择导入方式：\n\n👉 点击【确定】：合并数据（保留现在的，把新的加在后面，同名站点不重复）\n👉 点击【取消】：覆盖数据（清空现在的，完全变成新的）");
-    if (isMerge) {
-        let addedCount = 0;
-        const existingNames = new Set(sites.map(s => s.name));
-        parsedData.forEach(newSite => {
-            if (!existingNames.has(newSite.name)) {
-                sites.push(newSite);
-                existingNames.add(newSite.name);
-                addedCount++;
-            }
-        });
-        alert(`🎉 合并成功！新增了 ${addedCount} 个站点。`);
-    } else {
-        sites = parsedData;
-        alert('🎉 覆盖成功！数据已完全替换。');
-    }
-    sd(); rs(); closeSync();
-}
-
-function impFile(e) { 
-    const f=e.target.files[0]; if(!f)return; 
-    const r=new FileReader(); 
-    r.onload=function(e){ try{ processImportData(JSON.parse(e.target.result)); }catch(err){ alert('❌ 导入失败：文件解析错误'); } }; 
-    r.readAsText(f); 
-}
-function impTxt() { 
-    const s=document.getElementById('impTxt').value.trim(); if(!s)return alert('请先粘贴数据'); 
-    try{ processImportData(JSON.parse(s)); }catch(e){ alert('❌ 导入失败：文本格式错误'); } 
-}
+function impFile(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(e){ try{ const d=JSON.parse(e.target.result); if(!Array.isArray(d)) throw 0; if(confirm('覆盖当前数据？')){ sites=d; sd(); rs(); closeSync(); alert('🎉 导入成功'); } }catch(err){ alert('❌ 格式错误'); } }; r.readAsText(f); }
+function impTxt() { const s=document.getElementById('impTxt').value.trim(); if(!s)return alert('请粘贴'); try{ const d=JSON.parse(s); if(!Array.isArray(d)) throw 0; if(confirm('覆盖当前数据？')){ sites=d; sd(); rs(); closeSync(); alert('🎉 导入成功'); } }catch(e){ alert('❌ 格式错误'); } }
 
 function ud() { let tb=0, tu=0; sites.forEach(s=>{ const b=parseFloat(s.balance); if(!isNaN(b)) tb+=b; if(s.supportSign==='是'&&s.isSigned==='否') tu++; }); document.getElementById('tb').innerText=tb.toFixed(1); document.getElementById('ts').innerText=sites.length; document.getElementById('tu').innerText=tu; }
 function tf(t) { currentFilter = (currentFilter===t)?'none':t; document.getElementById('fu').className = currentFilter==='unsign'?'btn-f ag':'btn-f'; document.getElementById('fr').className = currentFilter==='recharge'?'btn-f ay':'btn-f'; rs(); }
 function resSigns() { if(confirm('重置所有签到状态？')){ sites.forEach(s=>{ if(s.supportSign==='是') s.isSigned='否'; }); sd(); rs(); } }
 function tso() { const v=document.getElementById('ss').value==='是'; document.getElementById('sd').classList.toggle('hidden',!v); document.getElementById('cg').classList.toggle('hidden',!v); }
 function addM(n='',p='') { const c=document.getElementById('mc'); const d=document.createElement('div'); d.className='dynamic-row'; d.innerHTML=`<input type="text" class="input-model mn" value="${n}" placeholder="名称"><input type="text" class="input-price mp" value="${p}" placeholder="价格"><button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>`; c.appendChild(d); }
+
+// 新增动态添加充值记录
 function addR(date = '', amount = '') {
-    const c = document.getElementById('rc'); const d = document.createElement('div'); d.className = 'dynamic-row';
+    const c = document.getElementById('rc');
+    const d = document.createElement('div');
+    d.className = 'dynamic-row';
+    // 如果没传日期，默认今天
     const defaultDate = date || new Date().toISOString().split('T')[0];
     d.innerHTML = `<input type="date" class="input-model r-date" value="${defaultDate}"><input type="text" class="input-price r-amount" value="${amount}" placeholder="金额"><button type="button" class="btn-remove-model" onclick="this.parentElement.remove()">×</button>`;
     c.appendChild(d);
 }
+
 function tp(i) { const p=document.getElementById('p'+i), e=document.getElementById('e'+i); if(p.innerText==='••••••'){ p.innerText=sites[i].accountPass; e.innerText='🙈'; }else{ p.innerText='••••••'; e.innerText='👁️'; } }
 
 function rs() {
 const l=document.getElementById('sl'); l.innerHTML=''; searchKeyword=document.getElementById('si').value.toLowerCase();
 sites.forEach((site,index)=>{
 if(currentFilter==='unsign'&&!(site.supportSign==='是'&&site.isSigned==='否'))return;
-if(currentFilter==='recharge'&&!(site.recharges&&site.recharges.length>0))return;
+if(currentFilter==='recharge'&&!(site.recharges&&site.recharges.length>0))return; // 筛选有流水的站点
 let sc=site.name+(site.remark||'')+(site.customUrl||'')+(site.qqGroup||'')+(site.accountUser||'');
 if(site.foodModels)site.foodModels.forEach(m=>{sc+=(m.name+m.price)});
 if(searchKeyword&&!sc.toLowerCase().includes(searchKeyword))return;
@@ -252,6 +217,8 @@ let mh=''; if(site.foodModels&&site.foodModels.length>0){const ms=site.foodModel
 let uh=site.customUrl?`<div class="url-box"><div class="url-info"><div class="url-label">专属 URL</div><div class="url-text">${site.customUrl}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.customUrl}',this)">📋 复制</button></div>`:'';
 let ah=(site.accountUser||site.accountPass)?`<div class="auth-box">${site.accountUser?`<div class="auth-row"><div class="auth-info"><div class="auth-label">🔑 用户名</div><div class="auth-text">${site.accountUser}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.accountUser}',this)">📋 复制</button></div>`:''}${site.accountPass?`<div class="auth-row"><div class="auth-info"><div class="auth-label">🔒 密码</div><div class="auth-text" id="p${index}">••••••</div></div><button class="btn-eye" id="e${index}" onclick="event.stopPropagation();tp(${index})">👁️</button><button class="btn-copy" onclick="event.stopPropagation();cp('${site.accountPass}',this)">📋 复制</button></div>`:''}</div>`:'';
 let qh=site.qqGroup?`<div class="qq-box"><div class="qq-info"><div class="qq-label">🐧 官方QQ群</div><div class="qq-text">${site.qqGroup}</div></div><button class="btn-copy" onclick="event.stopPropagation();cp('${site.qqGroup}',this)">📋 复制群号</button></div>`:'';
+
+// 充值记录渲染
 let rh = '';
 if (site.recharges && site.recharges.length > 0) {
     let total = 0;
@@ -260,59 +227,43 @@ if (site.recharges && site.recharges.length > 0) {
         if (!isNaN(amt)) total += amt;
         return `<div class="recharge-item"><span>${r.date || '未知'}</span><span>+${r.amount || 0}</span></div>`;
     }).join('');
-    rh = `<div class="recharge-box"><div class="recharge-title"><span>💰 充值流水</span><span class="recharge-total">总计: ${total.toFixed(1)}</span></div><div class="recharge-list">${listItems}</div></div>`;
+    
+    rh = `<div class="recharge-box">
+        <div class="recharge-title"><span>💰 充值流水</span><span class="recharge-total">总计: ${total.toFixed(1)}</span></div>
+        <div class="recharge-list">${listItems}</div>
+    </div>`;
 }
+
 let rkh=site.remark?`<div class="remark-box"><div class="remark-label">备注</div><div class="remark-text">${site.remark}</div></div>`:'';
 const c=document.createElement('div'); const ic=site.isCollapsed?'collapsed':''; const cc=(site.supportSign==='是'&&site.isSigned==='否')?'uc':''; c.className=`card ${ic} ${cc}`;
-
-c.setAttribute('draggable', 'true');
-c.setAttribute('data-index', index);
-c.addEventListener('dragstart', handleDragStart);
-c.addEventListener('dragover', handleDragOver);
-c.addEventListener('drop', handleDrop);
-c.addEventListener('dragend', handleDragEnd);
-
 c.innerHTML=`<div class="card-header" onclick="togC(${index})"><div class="site-name">${site.name}</div><div class="toggle-icon">${ic?'🍎':'🍏'}</div></div><div class="card-body"><div class="link-row">${site.url?`<a href="${site.url.startsWith('http')?site.url:'https://'+site.url}" target="_blank" class="site-link">🔗 访问</a><button class="btn-copy" onclick="event.stopPropagation();cp('${site.url}',this)">📋 复制</button>`:''}</div>${sh}<div class="info-row"><span class="info-label">当前余额</span><span class="balance">${site.balance||'0'}</span></div>${rh}${uh}${ah}${qh}${mh}${rkh}<div class="actions"><button class="btn-small btn-edit" onclick="event.stopPropagation();edS(${index})">编辑</button><button class="btn-small btn-delete" onclick="event.stopPropagation();delS(${index})">删除</button></div></div>`;
 l.appendChild(c); });
 if(l.innerHTML==='')l.innerHTML='<div class="empty-state">没有符合条件的站点~</div>'; ud(); }
 
-function handleDragStart(e) { draggedIndex = this.getAttribute('data-index'); this.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedIndex); }
-function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
-function handleDrop(e) {
-    e.preventDefault();
-    const targetCard = e.target.closest('.card');
-    if (targetCard && draggedIndex !== null) {
-        const targetIndex = targetCard.getAttribute('data-index');
-        if (draggedIndex !== targetIndex) {
-            const draggedItem = sites[draggedIndex];
-            sites.splice(draggedIndex, 1);
-            sites.splice(targetIndex, 0, draggedItem);
-            sd(); rs();
-        }
-    }
-}
-function handleDragEnd(e) { document.querySelectorAll('.card').forEach(c => c.classList.remove('dragging')); draggedIndex = null; }
-
 function togS(i){sites[i].isSigned=sites[i].isSigned==='是'?'否':'是';sd();rs();}
 function togC(i){sites[i].isCollapsed=!sites[i].isCollapsed;sd();rs();}
 function cp(t,b){let s=t.startsWith('http')||!t.includes('.')?t:'https://'+t;navigator.clipboard.writeText(s).then(()=>{const o=b.innerHTML;b.innerHTML='✅ 已复制';setTimeout(()=>b.innerHTML=o,1500)}).catch(()=>alert('复制失败'))}
-function sd(){localStorage.setItem('mySitesV13',JSON.stringify(sites))}
+function sd(){localStorage.setItem('mySitesV12',JSON.stringify(sites))}
 
 function openForm(){
 isEditing=false;document.getElementById('mt').innerText='添加新站点';document.getElementById('eid').value='';
 document.getElementById('sn').value='';document.getElementById('su').value='';document.getElementById('ss').value='是';
 document.getElementById('is').value='否';document.getElementById('sc').value='';document.getElementById('bal').value='';
 document.getElementById('cu').value='';document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('qg').value='';document.getElementById('rm').value='';
-document.getElementById('rc').innerHTML='';
+
+document.getElementById('rc').innerHTML=''; // 清空充值流水
 document.getElementById('mc').innerHTML='';addM();tso();document.getElementById('formModal').style.display='flex'
 }
 function closeForm(){document.getElementById('formModal').style.display='none'}
 
 function saveSite(){
 const n=document.getElementById('sn').value.trim();if(!n)return alert('名称不能为空');
+
+// 获取模型
 const mns=document.querySelectorAll('.mn'), mps=document.querySelectorAll('.mp'), fms=[];
 for(let i=0;i<mns.length;i++){const mn=mns[i].value.trim(),mp=mps[i].value.trim();if(mn||mp)fms.push({name:mn||'未命名',price:mp})}
 
+// 获取充值记录
 const rds = document.querySelectorAll('.r-date'), ras = document.querySelectorAll('.r-amount'), rcs = [];
 for (let i = 0; i < rds.length; i++) {
     const d = rds[i].value.trim();
@@ -323,7 +274,7 @@ for (let i = 0; i < rds.length; i++) {
 const d={
     name:n, url:document.getElementById('su').value.trim(), supportSign:document.getElementById('ss').value,
     isSigned:document.getElementById('is').value, condition:document.getElementById('sc').value.trim(),
-    balance:document.getElementById('bal').value.trim(), recharges:rcs,
+    balance:document.getElementById('bal').value.trim(), recharges:rcs, // 保存多笔充值
     customUrl:document.getElementById('cu').value.trim(), accountUser:document.getElementById('au').value.trim(),
     accountPass:document.getElementById('ap').value.trim(), qqGroup:document.getElementById('qg').value.trim(),
     foodModels:fms, remark:document.getElementById('rm').value.trim(),
@@ -340,10 +291,12 @@ document.getElementById('sn').value=s.name;document.getElementById('su').value=s
 document.getElementById('is').value=s.isSigned||'否';document.getElementById('sc').value=s.condition||'';document.getElementById('bal').value=s.balance||'';
 document.getElementById('cu').value=s.customUrl||'';document.getElementById('au').value=s.accountUser||'';document.getElementById('ap').value=s.accountPass||'';document.getElementById('qg').value=s.qqGroup||'';document.getElementById('rm').value=s.remark||'';
 
+// 渲染充值记录
 document.getElementById('rc').innerHTML='';
 if (s.recharges && s.recharges.length > 0) {
     s.recharges.forEach(r => addR(r.date, r.amount));
 } else if (s.hasRecharge === '是' && s.rechargeAmount) {
+    // 兼容旧数据：如果之前只有单笔，把它转成第一笔流水
     addR(s.rechargeDate || '', s.rechargeAmount);
 }
 
