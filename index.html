@@ -123,8 +123,8 @@ h1{font-size:22px;font-weight:900;text-align:center;color:var(--r);margin-bottom
 <button type="button" class="btn-copy" style="width:100%;padding:10px;background:#f6ffed;border-color:#b7eb8f;color:#389e0d" onclick="expTxt('today')">📋 复制今天新增文本</button>
 </div>
 <div class="form-group" style="padding-top:10px">
-<label style="color:var(--g);font-size:15px">📥 导入数据（自动合并追加）</label>
-<p style="font-size:12px;color:#999;margin-bottom:10px">导入只会把新数据加进去，绝不影响已有数据。</p>
+<label style="color:var(--g);font-size:15px">📥 导入数据（自动去重合并）</label>
+<p style="font-size:12px;color:#999;margin-bottom:10px">导入时如果遇到同名的站点会自动跳过，不会重复。</p>
 <input type="file" id="impFile" accept=".json" style="display:none" onchange="impFile(event)">
 <button type="button" class="btn-add-model" style="background:white;border-color:var(--g);color:var(--g)" onclick="document.getElementById('impFile').click()">📂 选择文件上传合并</button>
 <label style="margin-top:15px">或者：粘贴文本导入</label>
@@ -203,7 +203,6 @@ function expFile(mode) {
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u); 
 }
 
-// 新增文本复制功能
 function expTxt(mode) { 
     if(!sites.length) return alert('无数据'); 
     let dataToExport = sites;
@@ -217,13 +216,33 @@ function expTxt(mode) {
     navigator.clipboard.writeText(s).then(()=>alert('✅ 已复制到剪贴板')).catch(()=>alert('请手动长按上方文本框复制')); 
 }
 
+// ======= 核心修改：导入时按名字去重（方案A） =======
 function processImportData(parsedData) {
     if (!Array.isArray(parsedData)) { alert('❌ 导入失败：数据格式不正确'); return; }
     if (parsedData.length === 0) { alert('⚠️ 导入的文件里没有数据'); return; }
-    sites = sites.concat(parsedData);
-    alert(`🎉 合并成功！追加了 ${parsedData.length} 个站点，当前共 ${sites.length} 个站点。`);
+    
+    // 1. 提取当前已有的站点名字集合
+    const existingNames = new Set(sites.map(s => s.name));
+    let addedCount = 0;
+    let skippedCount = 0;
+
+    // 2. 遍历要导入的数据
+    parsedData.forEach(newSite => {
+        if (existingNames.has(newSite.name)) {
+            // 如果名字已存在，跳过不导入
+            skippedCount++;
+        } else {
+            // 如果名字不存在，追加到列表
+            sites.push(newSite);
+            existingNames.add(newSite.name); // 防止导入的数据本身内部就有重名
+            addedCount++;
+        }
+    });
+
+    alert(`🎉 导入完成！\n成功新增: ${addedCount} 个\n自动跳过(已存在): ${skippedCount} 个`);
     sd(); rs(); closeSync();
 }
+// ===============================================
 
 function impFile(e) { 
     const f=e.target.files[0]; if(!f)return; 
